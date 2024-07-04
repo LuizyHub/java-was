@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 
 import static codesquad.util.StringUtil.*;
@@ -14,18 +15,45 @@ public class HttpResponse {
 
     private static final Logger log = LoggerFactory.getLogger(HttpResponse.class);
 
-    private final HttpStatus status;
+    private HttpStatus status;
     private final Map<String, String> headers;
-    private final byte[] body;
+    private byte[] body;
 
     public HttpResponse(HttpStatus status, Map<String, String> headers, byte[] body) {
         this.status = status;
         this.headers = headers;
         this.body = body;
     }
+    public static HttpResponse create() {
+        return new HttpResponse(HttpStatus.OK, new HashMap<>(), null);
+    }
 
     public static HttpResponse create(HttpStatus status, Map<String, String> headers, byte[] body) {
         return new HttpResponse(status, headers, body);
+    }
+
+    public static HttpResponse NotFound() {
+        return new HttpResponse(HttpStatus.NOT_FOUND, Map.of(), null);
+    }
+
+    public static HttpResponse ServerError() {
+        return new HttpResponse(HttpStatus.INTERNAL_SERVER_ERROR, Map.of(), null);
+    }
+
+    public void setStatus(HttpStatus status) {
+        this.status = status;
+    }
+
+    public void setHeader(String key, String value) {
+        headers.put(key, value);
+    }
+
+    public void setBody(byte[] body) {
+        this.body = body;
+    }
+
+    public void setBody(String body) {
+        this.body = body.getBytes();
     }
 
     public byte[] toRaw() {
