@@ -29,6 +29,8 @@ public class UserCreateRouter extends Router{
             String name = queryParams.get("name").get(0);
             User user = new User(userId, name, password);
             user = userDao.save(user);
+            response.setStatus(HttpStatus.FOUND);
+            response.setHeader("Location", "/main");
             return user.toImmutableUser();
         };
     }

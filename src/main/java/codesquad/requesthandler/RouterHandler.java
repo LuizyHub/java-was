@@ -41,10 +41,10 @@ public class RouterHandler implements RequestHandler {
     }
 
     @Override
-    public HttpResponse handle(HttpRequest request) throws Exception {
+    public HttpResponse handle(HttpRequest request) throws Exception {  
         RouterFunction routerFunction = routerMap.get(new EndPoint(request.method(), request.uri().getPath()));
         HttpResponse response = HttpResponse.create();
-        Object body = routerFunction.route(request, HttpResponse.create());
+        Object body = routerFunction.route(request, response);
 
         if (JsonConverterFactory.canConvert(body)) {
             response.setHeader("Content-Type", "application/json");
