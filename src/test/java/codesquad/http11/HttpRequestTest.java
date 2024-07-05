@@ -8,7 +8,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -124,4 +123,5 @@ class HttpRequestTest {
         assertEquals(Map.of("Host", "localhost", "Accept", "text/html, application/json", "Content-Length", "0"), request.headers());
         assertEquals("", request.body());
     }
+
 }

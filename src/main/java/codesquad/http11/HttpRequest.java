@@ -13,7 +13,7 @@ import java.util.*;
 
 import static codesquad.util.StringUtil.*;
 
-public record HttpRequest(HttpMethod method, URI uri, Map<String, String> headers, String body) {
+public record HttpRequest(HttpMethod method, URI uri, Map<String, String> headers, String body, Map<String, List<String>> queryParams) {
 
     private static final Logger log = LoggerFactory.getLogger(HttpRequest.class);
 
@@ -27,6 +27,7 @@ public record HttpRequest(HttpMethod method, URI uri, Map<String, String> header
          *                  [ message-body ]
          */
         String startLine = br.readLine();
+        log.debug("startLine: {}", startLine);
 
         /**
          * request-line   = method SP request-target SP HTTP-version CRLF
@@ -76,6 +77,8 @@ public record HttpRequest(HttpMethod method, URI uri, Map<String, String> header
 
         URI uri = createURI(requestTarget, headers.get("Host"));
 
+        // Parse query parameters
+        Map<String, List<String>> queryParams = parseQueryParams(uri);
 
         // Read message-body based on Content-Length
         StringBuilder bodyBuilder = new StringBuilder();
@@ -89,7 +92,7 @@ public record HttpRequest(HttpMethod method, URI uri, Map<String, String> header
         }
         String body = bodyBuilder.toString();
 
-        return new HttpRequest(method, uri, headers, body);
+        return new HttpRequest(method, uri, headers, body, queryParams);
     }
 
     private static URI createURI(String requestTarget, String hostHeader) throws URISyntaxException {
@@ -98,23 +101,41 @@ public record HttpRequest(HttpMethod method, URI uri, Map<String, String> header
 
         String scheme = "http";
         int port = -1;
-        if (hostHeader != null && hostHeader.contains(":")) {
-            String[] hostTokens = hostHeader.split(":");
-            hostHeader = hostTokens[0];
-            port = Integer.parseInt(hostTokens[1]);
-        }
         if (requestTarget.startsWith("/")) {
             // origin-form
-            return new URI(scheme, null, hostHeader, port, requestTarget, null, null);
+            return new URI(scheme + "://" + hostHeader + requestTarget);
         } else if (requestTarget.startsWith("http://") || requestTarget.startsWith("https://")) {
             // absolute-form
             return new URI(requestTarget);
         } else if (requestTarget.equals("*")) {
             // asterisk-form
+            if (hostHeader != null && hostHeader.contains(":")) {
+                String[] hostTokens = hostHeader.split(":");
+                hostHeader = hostTokens[0];
+                port = Integer.parseInt(hostTokens[1]);
+            }
             return new URI(scheme, null, hostHeader, port, "/", null, null);
         } else {
             // authority-form (primarily used with CONNECT method)
             return new URI("http://" + requestTarget);
         }
+    }
+
+    private static Map<String, List<String>> parseQueryParams(URI uri) {
+        Map<String, List<String>> queryParams = new HashMap<>();
+        if (uri.getQuery() != null) {
+            String[] pairs = uri.getQuery().split("&");
+            for (String pair : pairs) {
+                int idx = pair.indexOf("=");
+                String key = pair.substring(0, idx);
+                String value = pair.substring(idx + 1).trim();
+                if (queryParams.containsKey(key)) {
+                    queryParams.get(key).add(value);
+                } else {
+                    queryParams.put(key, new ArrayList<>(List.of(value)));
+                }
+            }
+        }
+        return Collections.unmodifiableMap(queryParams);
     }
 }
