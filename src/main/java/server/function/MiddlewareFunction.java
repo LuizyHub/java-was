@@ -1,7 +1,7 @@
-package codesquad.router;
+package server.function;
 
-import codesquad.http11.HttpRequest;
-import codesquad.http11.HttpResponse;
+import server.http11.HttpRequest;
+import server.http11.HttpResponse;
 
 public interface MiddlewareFunction {
     boolean route(HttpRequest request, HttpResponse response);
