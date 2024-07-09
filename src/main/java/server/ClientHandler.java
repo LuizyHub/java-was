@@ -1,9 +1,12 @@
-package codesquad;
+package server;
 
-import codesquad.http11.*;
 import codesquad.requesthandler.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import server.config.Configuration;
+import server.http11.HttpMethod;
+import server.http11.HttpRequest;
+import server.http11.HttpResponse;
 
 import java.io.*;
 import java.net.Socket;
@@ -12,14 +15,11 @@ import java.util.List;
 public class ClientHandler implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(ClientHandler.class);
     private final Socket clientSocket;
-    private final List<RequestHandler> requestHandlers = List.of(
-            RouterHandler.getInstance(),
-            StaticResourceHandler.getInstance(),
-            IndexPageHandler.getInstance()
-    );
+    private final List<RequestHandler> requestHandlers;
 
-    public ClientHandler(Socket clientSocket) {
+    public ClientHandler(Socket clientSocket, List<RequestHandler> requestHandlers) {
         this.clientSocket = clientSocket;
+        this.requestHandlers = requestHandlers;
     }
 
     @Override
@@ -46,15 +46,11 @@ public class ClientHandler implements Runnable {
     }
 
     private RequestHandler getHandler(HttpRequest request) {
-        HttpMethod method = request.method();
-        String path = request.uri().getPath();
-
         for (RequestHandler requestHandler : requestHandlers) {
-            if (requestHandler.canHandle(method, path)) {
+            if (requestHandler.canHandle(request.endPoint())) {
                 return requestHandler;
             }
         }
-
         return NoHandler.getInstance();
     }
 }
