@@ -1,6 +1,6 @@
-package codesquad.util;
+package server.util;
 
-import codesquad.http11.HttpMethod;
+import server.http11.HttpMethod;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,6 +10,9 @@ public record EndPoint(HttpMethod method, String path) {
 
     public static EndPoint of(HttpMethod method, String path) {
         return new EndPoint(method, path);
+    }
+    public static EndPoint of(HttpMethod method) {
+        return new EndPoint(method, "");
     }
 
     public boolean matches(String method, String path) {
@@ -28,6 +31,10 @@ public record EndPoint(HttpMethod method, String path) {
 
     private static String convertPathToRegex(String path) {
         return path.replaceAll(PATH_VARIABLE_REGEX, "([^/]+)");
+    }
+
+    public EndPoint addBasePath(String basePath) {
+        return new EndPoint(method, basePath + path);
     }
 
     @Override
