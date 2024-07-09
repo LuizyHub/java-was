@@ -1,4 +1,4 @@
-package codesquad.http11;
+package server.http11;
 
 public enum HttpStatus {
     // 1xx: Informational

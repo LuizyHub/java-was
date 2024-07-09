@@ -1,4 +1,4 @@
-package codesquad.http11;
+package server.http11;
 
 /**
  * 지원할 컨텐츠 타입의 확장자 목록

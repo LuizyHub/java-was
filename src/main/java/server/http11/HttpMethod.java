@@ -1,4 +1,4 @@
-package codesquad.http11;
+package server.http11;
 
 public enum HttpMethod {
     GET, HEAD, POST, PUT, DELETE, CONNECT, OPTIONS, TRACE, PATCH;

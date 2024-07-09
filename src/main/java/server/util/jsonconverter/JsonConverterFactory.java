@@ -1,4 +1,4 @@
-package codesquad.util.jsonconverter;
+package server.util.jsonconverter;
 
 import java.util.Map;
 
