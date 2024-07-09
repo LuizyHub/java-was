@@ -28,7 +28,7 @@
 ```java
 public interface RequestHandler {  
 
-    boolean canHandle(HttpMethod method, String path);  
+    boolean canHandle(Endpoint endPoint);  
   
     HttpResponse handle(HttpRequest request) throws Exception;  
 }
