@@ -1,8 +1,9 @@
 package codesquad.requesthandler;
 
-import codesquad.http11.*;
 import org.slf4j.Logger;
-import java.io.File;
+import server.http11.*;
+import server.util.EndPoint;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -17,20 +18,17 @@ public abstract class AbstractResourceHandler implements RequestHandler {
     }
 
     @Override
-    public boolean canHandle(HttpMethod method, String path) {
-        if (!HttpMethod.GET.equals(method)) {
+    public boolean canHandle(EndPoint endPoint) {
+        if (!HttpMethod.GET.equals(endPoint.method())) {
             return false;
         }
 
-        URL resourceUrl = getClass().getResource(STATIC_RESOURCE_PATH + getResourcePathSuffix(path));
+        String name = STATIC_RESOURCE_PATH + getResourcePathSuffix(endPoint.path());
+        URL resourceUrl = getClass().getResource(name);
         if (resourceUrl == null) {
             return false;
         }
-        try {
-            if (!new File(resourceUrl.toURI()).isFile()) {
-                return false;
-            }
-        } catch (Exception e) {
+        if (!name.contains(".")) {
             return false;
         }
         return true;
