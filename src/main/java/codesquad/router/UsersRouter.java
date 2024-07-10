@@ -68,7 +68,7 @@ public class UsersRouter extends Router {
         User user = new User(userId, name, password);
         user = userDao.save(user);
         response.setStatus(HttpStatus.FOUND);
-        response.setHeader("Location", "/main");
+        response.setHeader("Location", "/index.html");
         response.setHeader("Content-Type", "application/json");
         return user.toImmutableUser();
     }
