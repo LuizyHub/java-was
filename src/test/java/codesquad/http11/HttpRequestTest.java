@@ -3,6 +3,8 @@ package codesquad.http11;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import server.http11.HttpMethod;
+import server.http11.HttpRequest;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

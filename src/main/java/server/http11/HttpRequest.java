@@ -1,19 +1,26 @@
-package codesquad.http11;
+package server.http11;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import server.util.EndPoint;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
-import static codesquad.util.StringUtil.*;
+import static server.util.StringUtil.*;
 
-public record HttpRequest(HttpMethod method, URI uri, Map<String, String> headers, String body, Map<String, List<String>> queryParams) {
+public record HttpRequest(
+        HttpMethod method,
+        URI uri,
+        Map<String, String> headers,
+        String body,
+        Map<String, List<String>> queryParams,
+        EndPoint endPoint
+) {
 
     private static final Logger log = LoggerFactory.getLogger(HttpRequest.class);
 
@@ -76,10 +83,7 @@ public record HttpRequest(HttpMethod method, URI uri, Map<String, String> header
         headers = Collections.unmodifiableMap(headers);
 
         URI uri = createURI(requestTarget, headers.get("Host"));
-
-        // Parse query parameters
-        Map<String, List<String>> queryParams = parseQueryParams(uri);
-
+        
         // Read message-body based on Content-Length
         StringBuilder bodyBuilder = new StringBuilder();
         if (headers.containsKey("Content-Length")) {
@@ -92,7 +96,16 @@ public record HttpRequest(HttpMethod method, URI uri, Map<String, String> header
         }
         String body = bodyBuilder.toString();
 
-        return new HttpRequest(method, uri, headers, body, queryParams);
+        // Parse query parameters
+        Map<String, List<String>> queryParams;
+        if (headers.get("Content-Type") != null && headers.get("Content-Type").contains("application/x-www-form-urlencoded")) {
+            queryParams = parseQueryParams(URLDecoder.decode(body, "UTF-8"));
+        }
+        else {
+            queryParams = parseQueryParams(uri);
+        }
+
+        return new HttpRequest(method, uri, headers, body, queryParams, EndPoint.of(method, uri.getPath()));
     }
 
     private static URI createURI(String requestTarget, String hostHeader) throws URISyntaxException {
@@ -123,8 +136,19 @@ public record HttpRequest(HttpMethod method, URI uri, Map<String, String> header
 
     private static Map<String, List<String>> parseQueryParams(URI uri) {
         Map<String, List<String>> queryParams = new HashMap<>();
-        if (uri.getQuery() != null) {
-            String[] pairs = uri.getQuery().split("&");
+        parseQueryParams(uri.getQuery(), queryParams);
+        return Collections.unmodifiableMap(queryParams);
+    }
+
+    private static Map<String, List<String>> parseQueryParams(String string) {
+        Map<String, List<String>> queryParams = new HashMap<>();
+        parseQueryParams(string, queryParams);
+        return Collections.unmodifiableMap(queryParams);
+    }
+
+    private static void parseQueryParams(String string, Map<String, List<String>> queryParams) {
+        if (string != null) {
+            String[] pairs = string.split("&");
             for (String pair : pairs) {
                 int idx = pair.indexOf("=");
                 String key = pair.substring(0, idx);
@@ -136,6 +160,5 @@ public record HttpRequest(HttpMethod method, URI uri, Map<String, String> header
                 }
             }
         }
-        return Collections.unmodifiableMap(queryParams);
     }
 }

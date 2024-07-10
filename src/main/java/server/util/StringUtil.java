@@ -1,4 +1,4 @@
-package codesquad.util;
+package server.util;
 
 public final class StringUtil {
 

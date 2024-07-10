@@ -1,14 +1,12 @@
 package codesquad.requesthandler;
 
-import codesquad.http11.HttpMethod;
-import codesquad.http11.HttpRequest;
-import codesquad.http11.HttpResponse;
-
-import java.io.IOException;
+import server.http11.HttpRequest;
+import server.http11.HttpResponse;
+import server.util.EndPoint;
 
 public interface RequestHandler {
 
-    boolean canHandle(HttpMethod method, String path);
+    boolean canHandle(EndPoint endPoint);
 
     HttpResponse handle(HttpRequest request) throws Exception;
 }

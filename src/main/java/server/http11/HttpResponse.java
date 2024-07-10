@@ -1,4 +1,4 @@
-package codesquad.http11;
+package server.http11;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import static codesquad.util.StringUtil.*;
+import static server.util.StringUtil.*;
 
 public class HttpResponse {
 
@@ -38,6 +38,10 @@ public class HttpResponse {
 
     public static HttpResponse ServerError() {
         return new HttpResponse(HttpStatus.INTERNAL_SERVER_ERROR, Map.of(), null);
+    }
+
+    public static HttpResponse BadRequest() {
+        return new HttpResponse(HttpStatus.BAD_REQUEST, Map.of(), null);
     }
 
     public void setStatus(HttpStatus status) {

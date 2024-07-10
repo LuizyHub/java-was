@@ -1,7 +1,8 @@
 package codesquad.util;
 
-import codesquad.http11.HttpMethod;
+import server.http11.HttpMethod;
 import org.junit.jupiter.api.Test;
+import server.util.EndPoint;
 
 import java.util.regex.Matcher;
 
