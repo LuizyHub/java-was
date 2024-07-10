@@ -20,10 +20,19 @@ public class Client {
         this.IP = "http://localhost:" + configuration.getPort();
     }
 
+    public Response sendRequest(String httpMethod, String path) throws IOException {
+        return this.sendRequest(httpMethod, path, null, null);
+    }
+
+    public Response sendRequest(String httpMethod, String path, Map<String, String> headers) throws IOException {
+        return this.sendRequest(httpMethod, path, headers, null);
+    }
+
     public Response sendRequest(String httpMethod, String path, Map<String, String> headers, String Body) throws IOException {
         // 요청할 URL 설정
         URL url = new URL(IP + path);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setInstanceFollowRedirects(false);
         conn.setRequestMethod(httpMethod);
 
         // 요청 헤더 설정
