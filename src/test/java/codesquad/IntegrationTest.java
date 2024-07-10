@@ -39,11 +39,4 @@ public class IntegrationTest {
         Thread.sleep(1000);
     }
 
-    @Test void testClientResponse() throws IOException {
-        Response response = client.sendRequest("GET", "/luizy", null, null);
-
-        assertEquals(200, response.responseCode());
-        assertEquals("OK", response.responseMessage());
-        assertEquals("Hello, Luizy!", response.responseBody());
-    }
 }

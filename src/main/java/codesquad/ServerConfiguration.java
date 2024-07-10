@@ -23,11 +23,6 @@ public class ServerConfiguration extends Configuration {
     }
 
     @Override
-    protected void addRouterFunctions(PairAdder<EndPoint, RouterFunction> routerFunctionAdder) {
-        routerFunctionAdder.add(EndPoint.of(HttpMethod.GET, "/luizy"), (request, response) -> "Hello, Luizy!");
-    }
-
-    @Override
     protected void addRouters(Adder<Router> routerAdder) {
         routerAdder.add(new UsersRouter(UserDao.getInstance()));
         routerAdder.add(new RegisterRouter());
