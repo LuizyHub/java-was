@@ -53,15 +53,20 @@ public class Client {
         String responseMessage = conn.getResponseMessage();
         Map<String, List<String>> headerFields = conn.getHeaderFields();
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        String inputLine;
-        StringBuilder response = new StringBuilder();
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
+        int contentLength = conn.getContentLength();
 
-        String responseBody = response.toString();
+        // 응답 바디 읽기
+        String responseBody = null;
+        if (contentLength > 0) {
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder bodyBuilder = new StringBuilder();
+            char[] buffer = new char[contentLength];
+            int bytesRead = br.read(buffer, 0, contentLength);
+            if (bytesRead > 0) {
+                bodyBuilder.append(buffer, 0, bytesRead);
+            }
+            responseBody = bodyBuilder.toString();
+        }
 
         return new Response(responseCode, responseMessage, headerFields, responseBody);
     }
