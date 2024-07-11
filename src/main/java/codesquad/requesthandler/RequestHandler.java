@@ -8,5 +8,5 @@ public interface RequestHandler {
 
     boolean canHandle(EndPoint endPoint);
 
-    HttpResponse handle(HttpRequest request) throws Exception;
+    void handle(HttpRequest request, HttpResponse response) throws Exception;
 }

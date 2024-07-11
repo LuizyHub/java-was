@@ -29,7 +29,7 @@ public class Server {
         while (true) {
             Socket clientSocket = serverSocket.accept();
             log.info("Client connected: {}", clientSocket.getRemoteSocketAddress());
-            executorService.execute(new ClientHandler(clientSocket, configuration.getRequestHandlers()));
+            executorService.execute(new ClientHandler(clientSocket, configuration.getRequestHandlers(), configuration.getFilters()));
         }
     }
 }

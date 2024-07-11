@@ -66,13 +66,20 @@ public class HttpResponse {
     }
 
     public void setCookie(String key, String value) {
-        setCookie(key, value, -1, "/", false, true);
+        setCookie(key, value, -2, "/", false, true);
     }
 
     public void setCookie(String key, String value, int maxAge, String path, boolean secure, boolean httpOnly) {
         StringBuilder sb = new StringBuilder();
+
+        if (headers.containsKey("Set-Cookie")) {
+            sb.append(headers.get("Set-Cookie")).append("; ");
+        }
+
         sb.append(key).append("=").append(value).append("; ");
-        sb.append("Max-Age=").append(maxAge).append("; ");
+        if (maxAge != -2) { // -2: session cookie, -1: delete cookie (set Max-Age=0
+            sb.append("Max-Age=").append(maxAge).append("; ");
+        }
         sb.append("Path=").append(path).append("; ");
         if (secure) {
             sb.append("Secure; ");
@@ -80,6 +87,7 @@ public class HttpResponse {
         if (httpOnly) {
             sb.append("HttpOnly; ");
         }
+
         setHeader("Set-Cookie", sb.toString());
     }
     public byte[] toRaw() {
@@ -117,5 +125,9 @@ public class HttpResponse {
         } catch (IOException e) {
             log.error(e.getMessage());
         }
+    }
+
+    public String getHeader(String s) {
+        return headers.get(s);
     }
 }

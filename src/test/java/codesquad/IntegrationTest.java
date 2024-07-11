@@ -276,7 +276,7 @@ public class IntegrationTest {
                     assertEquals(302, response.responseCode());
                     assertEquals("Found", response.responseMessage());
                     assertEquals("/index.html", response.headerFields().get("Location").get(0));
-                    assertNotNull(response.headerFields().get("Set-Cookie"));
+                    assertTrue(response.headerFields().get("Set-Cookie").get(0).contains("SID="));
                 }
 
                 @Test

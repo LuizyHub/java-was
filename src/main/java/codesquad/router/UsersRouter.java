@@ -10,6 +10,8 @@ import server.http11.HttpRequest;
 import server.http11.HttpResponse;
 import server.http11.HttpStatus;
 import server.router.Router;
+import server.session.Session;
+import server.session.SessionManager;
 import server.util.EndPoint;
 
 import java.util.HashMap;
@@ -19,9 +21,11 @@ import java.util.Map;
 public class UsersRouter extends Router {
     private static final String LOGIN_FAILED_HTML = "/user/login_failed.html";
 
+    private final SessionManager sessionManager;
     private final UserDao userDao;
 
-    public UsersRouter(UserDao userDao) {
+    public UsersRouter(SessionManager sessionManager, UserDao userDao) {
+        this.sessionManager = sessionManager;
         this.userDao = userDao;
     }
 
@@ -36,6 +40,7 @@ public class UsersRouter extends Router {
         routerFunctionAdder.add(getUserEndPoint, this::getUser);
         routerFunctionAdder.add(createUserEndPoint, this::createUser);
         routerFunctionAdder.add(loginEndPoint, this::login);
+        routerFunctionAdder.add(getUserNameEndPoint, this::getUserName);
     }
 
     private final EndPoint getGetUsersEndPoint = EndPoint.of(HttpMethod.GET, "/list");
@@ -88,7 +93,20 @@ public class UsersRouter extends Router {
             response.setRedirect(LOGIN_FAILED_HTML);
             return "login failed";
         }
+        Session session = sessionManager.getSession();
+        session.setUserId(user.getId());
         response.setRedirect("/index.html");
         return user.toImmutableUser();
+    }
+
+    private final EndPoint getUserNameEndPoint = EndPoint.of(HttpMethod.GET, "/name");
+    private String getUserName(HttpRequest request, HttpResponse response) {
+        Session session = sessionManager.getSession(false);
+        if (session == null) {
+            return "";
+        }
+        Long userId = session.getUserId();
+        User user = userDao.findById(userId);
+        return user.getNickname();
     }
 }

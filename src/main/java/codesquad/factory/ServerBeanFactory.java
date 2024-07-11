@@ -8,6 +8,9 @@ import codesquad.router.RegisterRouter;
 import codesquad.router.UsersRouter;
 import server.Server;
 import server.config.Configuration;
+import server.session.MemorySessionRepository;
+import server.session.SessionManager;
+import server.session.SessionRepository;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +36,7 @@ public class ServerBeanFactory {
     }
 
     public UsersRouter usersRouter() {
-        return getOrComputeBean(UsersRouter.class, () -> (UsersRouter) new UsersRouter(userDao()).init());
+        return getOrComputeBean(UsersRouter.class, () -> (UsersRouter) new UsersRouter(sessionManager(), userDao()).init());
     }
 
     public RegisterRouter registerRouter() {
@@ -42,6 +45,14 @@ public class ServerBeanFactory {
 
     public UserDao userDao() {
         return getOrComputeBean(UserDao.class, UserDao::new);
+    }
+
+    public SessionManager sessionManager() {
+        return getOrComputeBean(SessionManager.class, () -> new SessionManager(sessionRepository()));
+    }
+
+    public SessionRepository sessionRepository() {
+        return getOrComputeBean(SessionRepository.class, MemorySessionRepository::new);
     }
 
     protected synchronized <T> T getOrComputeBean(Class<T> beanClass, Supplier<T> supplier) {
