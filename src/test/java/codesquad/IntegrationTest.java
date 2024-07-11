@@ -1,5 +1,6 @@
 package codesquad;
 
+import codesquad.factory.ServerBeanFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,13 +13,23 @@ import java.net.ServerSocket;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class IntegrationTest {
 
-    private static final Configuration configuration = new TestServerConfiguration();
+    private static final ServerBeanFactory factory = new TestServerBeanFactory();
+
+    static class TestServerBeanFactory extends ServerBeanFactory {
+        @Override
+        public Configuration configuration() {
+            return getOrComputeBean(Configuration.class, () -> new TestServerConfiguration(this).init());
+        }
+    }
     static class TestServerConfiguration extends ServerConfiguration {
+        public TestServerConfiguration(ServerBeanFactory serverBeanFactory) {
+            super(serverBeanFactory);
+        }
+
         @Override
         protected int setPort() {
             try (ServerSocket socket = new ServerSocket(0)) {
@@ -29,13 +40,13 @@ public class IntegrationTest {
         }
     }
 
-    private static final Client client = new Client(configuration);
+    private static final Client client = new Client(factory.configuration());
 
     @BeforeAll
     public static void setUp() throws InterruptedException {
         new Thread(() -> {
             try {
-                Server server = new Server(configuration);
+                Server server = factory.server();
                 server.start();
             } catch (IOException e) {
                 e.printStackTrace();
