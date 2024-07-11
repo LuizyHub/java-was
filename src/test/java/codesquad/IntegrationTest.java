@@ -235,6 +235,71 @@ public class IntegrationTest {
         }
     }
 
+    @Nested
+    class step_5_쿠키를_이용한_로그인 {
+
+            @Nested
+            class 로그인은 {
+
+                static String userId = "codingluizy";
+                static String password = "1234";
+
+                @BeforeAll
+                static void 회원가입() throws IOException {
+                    // given
+                    String body = "userId=" + userId + "&password=" + password + "&name=박정제";
+                    Map<String, String> headers = Map.of(
+                            "Content-Type", "application/x-www-form-urlencoded",
+                            "Content-Length", String.valueOf(body.getBytes().length)
+                    );
+
+                    Response response = client.sendRequest("POST", "/user/create", headers, body);
+
+                    // then
+                    assertEquals(302, response.responseCode());
+                    assertEquals("Found", response.responseMessage());
+                    assertEquals("/index.html", response.headerFields().get("Location").get(0));
+                }
+
+                @Test
+                void 로그인_성공하면_쿠키를_발급한다() throws IOException {
+                    // given
+                    String body = "userId=" + userId + "&password=" + password;
+                    Map<String, String> headers = Map.of(
+                            "Content-Type", "application/x-www-form-urlencoded",
+                            "Content-Length", String.valueOf(body.getBytes().length)
+                    );
+
+                    Response response = client.sendRequest("POST", "/user/login", headers, body);
+
+                    // then
+                    assertEquals(302, response.responseCode());
+                    assertEquals("Found", response.responseMessage());
+                    assertEquals("/index.html", response.headerFields().get("Location").get(0));
+                    assertNotNull(response.headerFields().get("Set-Cookie"));
+                }
+
+                @Test
+                void 실패하면_user_login_failed_html로_이동한다() throws IOException {
+                    // given
+                    String body = "userId=" + userId + "&password=" + password + "wrong";
+                    Map<String, String> headers = Map.of(
+                            "Content-Type", "application/x-www-form-urlencoded",
+                            "Content-Length", String.valueOf(body.getBytes().length)
+                    );
+
+                    Response response = client.sendRequest("POST", "/user/login", headers, body);
+
+                    // then
+                    assertEquals(302, response.responseCode());
+                    assertEquals("Found", response.responseMessage());
+                    assertEquals("/user/login_failed.html", response.headerFields().get("Location").get(0));
+                    assertNull(response.headerFields().get("Set-Cookie"));
+                }
+            }
+
+    }
+
     private static String getFileText(String path) throws IOException {
         File file = new File(path);
         String expected = new String(file.toURI().toURL().openStream().readAllBytes());
