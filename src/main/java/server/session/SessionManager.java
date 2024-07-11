@@ -42,9 +42,13 @@ public class SessionManager implements Filter {
         }
 
         Session session = sessionRepository.findById(sid);
-        if (session == null && create) {
+        if (session == null) {
+            if (!create) {
+                return null;
+            }
             session = Session.create();
             response.setCookie(SID, session.getSessionId());
+            sessionRepository.save(session);
         }
         return session;
     }
