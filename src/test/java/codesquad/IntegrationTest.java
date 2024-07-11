@@ -1,5 +1,6 @@
 package codesquad;
 
+import codesquad.factory.ServerBeanFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,13 +13,24 @@ import java.net.ServerSocket;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class IntegrationTest {
 
-    private static final Configuration configuration = new TestServerConfiguration();
+    private static final ServerBeanFactory factory = new ServerBeanFactory();
+/*
+
+    static class TestServerBeanFactory extends ServerBeanFactory {
+        @Override
+        public Configuration configuration() {
+            return getOrComputeBean(Configuration.class, () -> new TestServerConfiguration(this).init());
+        }
+    }
     static class TestServerConfiguration extends ServerConfiguration {
+        public TestServerConfiguration(ServerBeanFactory serverBeanFactory) {
+            super(serverBeanFactory);
+        }
+
         @Override
         protected int setPort() {
             try (ServerSocket socket = new ServerSocket(0)) {
@@ -28,14 +40,24 @@ public class IntegrationTest {
             }
         }
     }
+*/
 
-    private static final Client client = new Client(configuration);
+//    private static final Client client;
+    private final Client client = new Client(factory.configuration());
+
+
+    static {
+        System.out.println("static init" + Thread.currentThread().getName());
+//        Configuration configuration = factory.configuration();
+//        client = new Client(configuration);
+    }
 
     @BeforeAll
     public static void setUp() throws InterruptedException {
+        System.out.println("set up" + Thread.currentThread().getName());
+        Server server = factory.server();
         new Thread(() -> {
             try {
-                Server server = new Server(configuration);
                 server.start();
             } catch (IOException e) {
                 e.printStackTrace();

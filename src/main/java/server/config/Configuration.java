@@ -19,11 +19,12 @@ public abstract class Configuration {
     private final int threadCount;
     private List<RequestHandler> requestHandlers = new ArrayList<>();
     private Map<EndPoint, RouterFunction> routerFunctionMap = new HashMap<>();
+    private boolean isInit = false;
+
 
     public Configuration() {
         this.port = setPort();
         this.threadCount = setThreadCount();
-        init();
     }
 
     /**
@@ -87,7 +88,12 @@ public abstract class Configuration {
         });
     };
 
-    public final void init() {
+    public final Configuration init() {
+        if (isInit) {
+            return this;
+        }
+        isInit = true;
+
         // setRouterFunctionMap
         addRouterFunctions(this::routerFunctionAdder);
 
@@ -102,6 +108,6 @@ public abstract class Configuration {
         addRequestHandlers(this::requestHandlerAdder);
         this.requestHandlers.add(NoHandler.getInstance());
         requestHandlers = List.copyOf(requestHandlers);
-
+        return this;
     }
 }

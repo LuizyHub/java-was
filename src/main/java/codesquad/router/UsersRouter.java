@@ -36,7 +36,7 @@ public class UsersRouter extends Router {
         routerFunctionAdder.add(createUserEndPoint, this::createUser);
     }
 
-    private static final EndPoint getGetUsersEndPoint = EndPoint.of(HttpMethod.GET, "/list");
+    private final EndPoint getGetUsersEndPoint = EndPoint.of(HttpMethod.GET, "/list");
     private Map<Long, ImmutableUser> getUsers(HttpRequest request, HttpResponse response) {
         Map<Long, ImmutableUser> users = new HashMap<>();
         List<User> userList = userDao.findAll();
@@ -48,14 +48,14 @@ public class UsersRouter extends Router {
         return users;
     }
 
-    private static final EndPoint getUserEndPoint = EndPoint.of(HttpMethod.GET, "/{id}");
+    private final EndPoint getUserEndPoint = EndPoint.of(HttpMethod.GET, "/{id}");
     private ImmutableUser getUser(HttpRequest request, HttpResponse response) {
         EndPoint endPoint = getUserEndPoint.addBasePath(getBasePath());
         Long userId = Long.parseLong(endPoint.getMatcher(request.endPoint().path()).group(1));
         return userDao.findById(userId).toImmutableUser();
     }
 
-    private static final EndPoint createUserEndPoint = EndPoint.of(HttpMethod.POST, "/create");
+    private final EndPoint createUserEndPoint = EndPoint.of(HttpMethod.POST, "/create");
     private Object createUser(HttpRequest request, HttpResponse response) {
         Map<String, List<String>> queryParams = request.queryParams();
         if (!queryParams.containsKey("userId") || !queryParams.containsKey("password") || !queryParams.containsKey("name")) {

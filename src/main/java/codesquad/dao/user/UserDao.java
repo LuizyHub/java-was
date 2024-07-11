@@ -6,10 +6,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class UserDao {
-    private static final UserDao instance = new UserDao();
-    private UserDao() {}
-    public static UserDao getInstance() {return instance;}
-
     private static final ConcurrentMap<Long, User> database = new ConcurrentHashMap<>();
     private static AtomicLong sequence = new AtomicLong(0);
 
