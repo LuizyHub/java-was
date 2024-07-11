@@ -60,6 +60,28 @@ public class HttpResponse {
         this.body = body.getBytes();
     }
 
+    public void setRedirect(String location) {
+        setHeader("Location", location);
+        setStatus(HttpStatus.FOUND);
+    }
+
+    public void setCookie(String key, String value) {
+        setCookie(key, value, -1, "/", false, true);
+    }
+
+    public void setCookie(String key, String value, int maxAge, String path, boolean secure, boolean httpOnly) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(key).append("=").append(value).append("; ");
+        sb.append("Max-Age=").append(maxAge).append("; ");
+        sb.append("Path=").append(path).append("; ");
+        if (secure) {
+            sb.append("Secure; ");
+        }
+        if (httpOnly) {
+            sb.append("HttpOnly; ");
+        }
+        setHeader("Set-Cookie", sb.toString());
+    }
     public byte[] toRaw() {
         StringBuilder sb = new StringBuilder();
         // 상태 라인
