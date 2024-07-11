@@ -44,7 +44,7 @@ public class ServerBeanFactory {
         return getOrComputeBean(UserDao.class, UserDao::new);
     }
 
-    protected synchronized  <T> T getOrComputeBean(Class<T> beanClass, Supplier<T> supplier) {
+    protected synchronized <T> T getOrComputeBean(Class<T> beanClass, Supplier<T> supplier) {
         Object o = beanMap.get(beanClass);
         if (o == null) {
             T t = supplier.get();
