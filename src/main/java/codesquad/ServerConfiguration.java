@@ -1,30 +1,28 @@
 package codesquad;
 
-import codesquad.dao.user.UserDao;
-import codesquad.router.UsersRouter;
-import server.http11.HttpMethod;
-import codesquad.requesthandler.IndexPageHandler;
+import codesquad.factory.ServerBeanFactory;
 import codesquad.requesthandler.RequestHandler;
-import codesquad.requesthandler.StaticResourceHandler;
-import codesquad.router.RegisterRouter;
-import server.function.RouterFunction;
-import server.util.EndPoint;
 import server.config.Configuration;
 import server.function.Adder;
-import server.function.PairAdder;
 import server.router.Router;
 
 public class ServerConfiguration extends Configuration {
-    
+
+    private final ServerBeanFactory factory;
+
+    public ServerConfiguration(ServerBeanFactory serverBeanFactory) {
+        this.factory = serverBeanFactory;
+    }
+
     @Override
     protected void addRequestHandlers(Adder<RequestHandler> requestHandlerAdder) {
-        requestHandlerAdder.add(new StaticResourceHandler());
-        requestHandlerAdder.add(new IndexPageHandler());
+        requestHandlerAdder.add(factory.staticResourceHandler());
+        requestHandlerAdder.add(factory.indexPageHandler());
     }
 
     @Override
     protected void addRouters(Adder<Router> routerAdder) {
-        routerAdder.add(new UsersRouter(UserDao.getInstance()));
-        routerAdder.add(new RegisterRouter());
+        routerAdder.add(factory.usersRouter());
+        routerAdder.add(factory.registerRouter());
     }
 }
