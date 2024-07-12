@@ -44,15 +44,9 @@ public class UsersRouter extends Router {
     }
 
     private final EndPoint getGetUsersEndPoint = EndPoint.of(HttpMethod.GET, "/list");
-    private Map<Long, ImmutableUser> getUsers(HttpRequest request, HttpResponse response) {
-        Map<Long, ImmutableUser> users = new HashMap<>();
-        List<User> userList = userDao.findAll();
-        for (User user : userList) {
-            users.put(user.getId(), user.toImmutableUser());
-        }
-
-        response.setHeader("Content-Type", "application/json");
-        return users;
+    private Object getUsers(HttpRequest request, HttpResponse response) {
+        response.setRedirect("/userList.html");
+        return "";
     }
 
     private final EndPoint getUserEndPoint = EndPoint.of(HttpMethod.GET, "/{id}");

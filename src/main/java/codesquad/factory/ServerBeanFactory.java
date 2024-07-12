@@ -5,7 +5,9 @@ import codesquad.dao.user.UserDao;
 import codesquad.requesthandler.IndexPageHandler;
 import codesquad.requesthandler.StaticResourceHandler;
 import codesquad.router.RegisterRouter;
+import codesquad.router.TemplateRouter;
 import codesquad.router.UsersRouter;
+import codesquad.template.TemplateLoader;
 import server.Server;
 import server.config.Configuration;
 import server.session.MemorySessionRepository;
@@ -53,6 +55,14 @@ public class ServerBeanFactory {
 
     public SessionRepository sessionRepository() {
         return getOrComputeBean(SessionRepository.class, MemorySessionRepository::new);
+    }
+
+    public TemplateRouter templateRouter() {
+        return getOrComputeBean(TemplateRouter.class, () -> (TemplateRouter) new TemplateRouter(templateLoader(), sessionManager(), userDao()).init());
+    }
+
+    public TemplateLoader templateLoader() {
+        return getOrComputeBean(TemplateLoader.class, TemplateLoader::new);
     }
 
     protected synchronized <T> T getOrComputeBean(Class<T> beanClass, Supplier<T> supplier) {

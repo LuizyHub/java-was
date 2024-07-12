@@ -33,6 +33,9 @@ public class RouterHandler implements RequestHandler {
 
         Object body = routerFunction.route(request, response);
 
+        if (body == null) {
+            return;
+        }
         response.setBody(convertBody(body));
     }
 
