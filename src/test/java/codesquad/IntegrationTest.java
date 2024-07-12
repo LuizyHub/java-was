@@ -64,7 +64,7 @@ public class IntegrationTest {
             @Test
             void index_html을_응답한다() throws IOException {
                 // when
-                Response response = client.sendRequest("GET","/index.html");
+                Response response = client.sendRequest("GET","/main/index.html");
 
                 // then
                 Map<String, List<String>> headerFields = response.headerFields();
@@ -73,7 +73,7 @@ public class IntegrationTest {
                 assertEquals("text/html", contentType);
 
                 String responseBody = response.responseBody();
-                String expected = getFileText("src/main/resources/static/index.html");
+                String expected = getFileText("src/main/resources/static/main/index.html");
                 System.out.println(expected);
                 assertEquals(expected, responseBody);
             }
@@ -89,7 +89,7 @@ public class IntegrationTest {
             @Test
             void html을_지원한다() throws IOException {
                 // when
-                Response response = client.sendRequest("GET","/index.html");
+                Response response = client.sendRequest("GET","/main/index.html");
 
                 // then
                 Map<String, List<String>> headerFields = response.headerFields();
@@ -98,7 +98,7 @@ public class IntegrationTest {
                 assertEquals("text/html", contentType);
 
                 String responseBody = response.responseBody();
-                String expected = getFileText("src/main/resources/static/index.html");
+                String expected = getFileText("src/main/resources/static/main/index.html");
                 assertEquals(expected, responseBody);
             }
 
