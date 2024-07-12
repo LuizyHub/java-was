@@ -42,7 +42,11 @@ public class ServerConfiguration extends Configuration {
         routerFunctionAdder.add(EndPoint.of(HttpMethod.GET, "/logout"), (request, response) -> {
             response.setCookie("SID", "", -1, "/", false, true);
             response.setRedirect("/index.html");
-            return "";
+            return null;
+        });
+        routerFunctionAdder.add(EndPoint.of(HttpMethod.GET, "/"), (request, response) -> {
+            response.setRedirect("/index.html");
+            return null;
         });
     }
 }
