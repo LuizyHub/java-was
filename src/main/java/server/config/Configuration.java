@@ -3,6 +3,7 @@ package server.config;
 import codesquad.requesthandler.NoHandler;
 import codesquad.requesthandler.RequestHandler;
 import server.RouterHandler;
+import server.filter.Filter;
 import server.function.RouterFunction;
 import server.util.EndPoint;
 import server.function.Adder;
@@ -17,13 +18,15 @@ import java.util.Map;
 public abstract class Configuration {
     private final int port;
     private final int threadCount;
+    private final List<Filter> filters = new ArrayList<>();
     private List<RequestHandler> requestHandlers = new ArrayList<>();
     private Map<EndPoint, RouterFunction> routerFunctionMap = new HashMap<>();
+    private boolean isInit = false;
+
 
     public Configuration() {
         this.port = setPort();
         this.threadCount = setThreadCount();
-        init();
     }
 
     /**
@@ -51,6 +54,16 @@ public abstract class Configuration {
      */
     public final int getThreadCount() {
         return threadCount;
+    }
+
+    protected void addFilters(Adder<Filter> filterAdder) {}
+
+    private void filterAdder(Filter filter) {
+        filters.add(filter);
+    }
+
+    public final List<Filter> getFilters() {
+        return filters;
     }
 
     /**
@@ -87,7 +100,15 @@ public abstract class Configuration {
         });
     };
 
-    public final void init() {
+    public final Configuration init() {
+        if (isInit) {
+            return this;
+        }
+        isInit = true;
+
+        // setFilters
+        addFilters(this::filterAdder);
+
         // setRouterFunctionMap
         addRouterFunctions(this::routerFunctionAdder);
 
@@ -102,6 +123,6 @@ public abstract class Configuration {
         addRequestHandlers(this::requestHandlerAdder);
         this.requestHandlers.add(NoHandler.getInstance());
         requestHandlers = List.copyOf(requestHandlers);
-
+        return this;
     }
 }

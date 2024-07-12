@@ -28,14 +28,12 @@ public class RouterHandler implements RequestHandler {
     }
 
     @Override
-    public HttpResponse handle(HttpRequest request) throws Exception {  
+    public void handle(HttpRequest request, HttpResponse response) throws Exception {
         RouterFunction routerFunction = routerMap.get(request.endPoint());
 
-        HttpResponse response = HttpResponse.create();
         Object body = routerFunction.route(request, response);
 
         response.setBody(convertBody(body));
-        return response;
     }
 
     private byte[] convertBody(Object body) throws Exception {

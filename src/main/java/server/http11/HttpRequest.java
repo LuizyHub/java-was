@@ -21,6 +21,19 @@ public record HttpRequest(
         Map<String, List<String>> queryParams,
         EndPoint endPoint
 ) {
+    // TODO: refactor to use HttpRequestBuilder
+    public String getCookie(String key) {
+        if (headers.containsKey("Cookie")) {
+            String[] cookies = headers.get("Cookie").split(";");
+            for (String cookie : cookies) {
+                String[] cookieTokens = cookie.split("=", 2);
+                if (cookieTokens[0].trim().equals(key)) {
+                    return cookieTokens[1].trim();
+                }
+            }
+        }
+        return null;
+    }
 
     private static final Logger log = LoggerFactory.getLogger(HttpRequest.class);
 
@@ -95,6 +108,8 @@ public record HttpRequest(
             }
         }
         String body = bodyBuilder.toString();
+
+        log.debug("body: {}", body);
 
         // Parse query parameters
         Map<String, List<String>> queryParams;

@@ -10,10 +10,10 @@ import java.util.Map;
 public abstract class Router {
     private final String basePath;
     private Map<EndPoint, RouterFunction> routerFunctionMap = new HashMap<>();
+    private boolean isInit = false;
 
     public Router() {
         basePath = setBasePath();
-        init();
     }
 
     protected String setBasePath() {
@@ -38,9 +38,14 @@ public abstract class Router {
         return routerFunctionMap;
     }
 
-    private void init() {
+    public Router init() {
+        if (isInit) {
+            return this;
+        }
+        isInit = true;
         addRouterFunctions(this::routerFunctionAdder);
         setFieldImmutable();
+        return this;
     }
 
     private void setFieldImmutable() {
