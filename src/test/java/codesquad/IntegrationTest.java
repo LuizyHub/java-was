@@ -1,6 +1,7 @@
 package codesquad;
 
 import codesquad.factory.ServerBeanFactory;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -53,6 +54,11 @@ public class IntegrationTest {
             }
         }).start();
         Thread.sleep(1000);
+    }
+
+    @AfterAll
+    public static void tearDown() {
+        factory.server().stop();
     }
 
     @Nested

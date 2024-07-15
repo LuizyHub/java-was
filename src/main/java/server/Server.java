@@ -16,6 +16,7 @@ public class Server {
     private final Configuration configuration;
     private final ExecutorService executorService;
     private final int port;
+    private boolean isRunning = true;
 
     public Server(Configuration configuration) {
         this.configuration = configuration;
@@ -26,10 +27,15 @@ public class Server {
     public void start() throws IOException {
         ServerSocket serverSocket = new ServerSocket(port); // 8080 포트에서 서버를 엽니다.
         log.info("Listening for connection on port {} ....", port);
-        while (true) {
+        while (isRunning) {
             Socket clientSocket = serverSocket.accept();
             log.info("Client connected: {}", clientSocket.getRemoteSocketAddress());
             executorService.execute(new ClientHandler(clientSocket, configuration.getRequestHandlers(), configuration.getFilters()));
         }
+        serverSocket.close();
+    }
+
+    public void stop() {
+        isRunning = false;
     }
 }
