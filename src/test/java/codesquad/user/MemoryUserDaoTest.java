@@ -1,6 +1,9 @@
 package codesquad.user;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -8,6 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class MemoryUserDaoTest {
 
     private final UserDao userDao = new MemoryUserDao();
+
+    @BeforeEach
+    void setUp() {
+        userDao.deleteAll();
+    }
 
     @Test
     void create() {
@@ -64,5 +72,22 @@ class MemoryUserDaoTest {
 
         // then
         assertEquals(savedUser.getId(), foundUser.getId());
+    }
+
+    @Test
+    void findAll() {
+        // given
+        User user1 = new User("luizy1", "luizy1", "1234");
+        User user2 = new User("luizy2", "luizy2", "1234");
+        User user3 = new User("luizy3", "luizy3", "1234");
+        userDao.save(user1);
+        userDao.save(user2);
+        userDao.save(user3);
+
+        // when
+        List<User> users = userDao.findAll();
+
+        // then
+        assertEquals(3, users.size());
     }
 }
