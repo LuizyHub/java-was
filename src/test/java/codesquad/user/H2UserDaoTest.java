@@ -11,7 +11,7 @@ class H2UserDaoTest {
     private final H2UserDao userDao = new H2UserDao(pool);
 
     @Test
-    void create() throws InterruptedException {
+    void create() {
         // given
         User user = new User("luizy", "luizy", "1234");
 
@@ -53,4 +53,17 @@ class H2UserDaoTest {
         assertEquals(savedUser.getPassword(), foundUser.getPassword());
     }
 
+    @Test
+    void findByUserId() {
+        // given
+        String UserId = "luizyToBeFind";
+        User user = new User(UserId, "luizy", "1234");
+        User savedUser = userDao.save(user);
+
+        // when
+        User foundUser = userDao.findByUserId(UserId);
+
+        // then
+        assertEquals(savedUser.getId(), foundUser.getId());
+    }
 }
