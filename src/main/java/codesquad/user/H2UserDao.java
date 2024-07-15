@@ -78,8 +78,26 @@ public class H2UserDao implements UserDao {
         }
     }
 
+    private final String SELECT_USER_BY_ID_SQL = "SELECT * FROM users WHERE id = ?";
     @Override
     public User findById(Long id) {
+        Connection con = getConnection();
+        try (PreparedStatement preparedStatement = con.prepareStatement(SELECT_USER_BY_ID_SQL)) {
+            preparedStatement.setLong(1, id);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return new User(
+                            resultSet.getLong("id"),
+                            resultSet.getString("user_id"),
+                            resultSet.getString("nickname"),
+                            resultSet.getString("password")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
         return null;
     }
 

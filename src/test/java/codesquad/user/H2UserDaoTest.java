@@ -37,4 +37,20 @@ class H2UserDaoTest {
         assertEquals(newNickname, updatedUser.getNickname());
     }
 
+    @Test
+    void findById() {
+        // given
+        User user = new User("luizy", "luizy", "1234");
+        User savedUser = userDao.save(user);
+
+        // when
+        User foundUser = userDao.findById(savedUser.getId());
+
+        // then
+        assertEquals(savedUser.getId(), foundUser.getId());
+        assertEquals(savedUser.getUserId(), foundUser.getUserId());
+        assertEquals(savedUser.getNickname(), foundUser.getNickname());
+        assertEquals(savedUser.getPassword(), foundUser.getPassword());
+    }
+
 }
