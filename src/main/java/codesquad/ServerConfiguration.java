@@ -21,6 +21,7 @@ public class ServerConfiguration extends Configuration {
 
     @Override
     protected void addFilters(Adder<Filter> filterAdder) {
+        filterAdder.add(factory.threadLocalManager());
         filterAdder.add(factory.sessionManager());
     }
 

@@ -2,6 +2,8 @@ package codesquad.factory;
 
 import codesquad.ServerConfiguration;
 import codesquad.dao.user.UserDao;
+import codesquad.filter.ContextManager;
+import codesquad.filter.ThreadLocalContextManager;
 import codesquad.requesthandler.IndexPageHandler;
 import codesquad.requesthandler.StaticResourceHandler;
 import codesquad.router.RegisterRouter;
@@ -10,7 +12,7 @@ import codesquad.router.UsersRouter;
 import codesquad.template.TemplateLoader;
 import server.Server;
 import server.config.Configuration;
-import server.session.MemorySessionRepository;
+import codesquad.database.MemorySessionRepository;
 import server.session.SessionManager;
 import server.session.SessionRepository;
 
@@ -50,7 +52,7 @@ public class ServerBeanFactory {
     }
 
     public SessionManager sessionManager() {
-        return getOrComputeBean(SessionManager.class, () -> new SessionManager(sessionRepository()));
+        return getOrComputeBean(SessionManager.class, () -> new SessionManager(contextManager(), sessionRepository()));
     }
 
     public SessionRepository sessionRepository() {
@@ -63,6 +65,14 @@ public class ServerBeanFactory {
 
     public TemplateLoader templateLoader() {
         return getOrComputeBean(TemplateLoader.class, TemplateLoader::new);
+    }
+
+    public ContextManager contextManager() {
+        return getOrComputeBean(ContextManager.class, this::threadLocalManager);
+    }
+
+    public ThreadLocalContextManager threadLocalManager() {
+        return getOrComputeBean(ThreadLocalContextManager.class, ThreadLocalContextManager::new);
     }
 
     protected synchronized <T> T getOrComputeBean(Class<T> beanClass, Supplier<T> supplier) {

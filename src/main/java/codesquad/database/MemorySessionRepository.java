@@ -1,4 +1,7 @@
-package server.session;
+package codesquad.database;
+
+import server.session.Session;
+import server.session.SessionRepository;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

@@ -1,15 +1,19 @@
 package server.session;
 
+import codesquad.filter.ContextManager;
 import server.filter.Filter;
 import server.http11.HttpRequest;
 import server.http11.HttpResponse;
 
+import static codesquad.filter.ContextManager.*;
+
 public class SessionManager implements Filter {
     private static final String SID = "SID";
-    private final ThreadLocal<Context> threadLocal = new ThreadLocal<>();
+    private final ContextManager contextManager;
     private final SessionRepository<String> sessionRepository;
 
-    public SessionManager(SessionRepository<String> sessionRepository) {
+    public SessionManager(ContextManager contextManager, SessionRepository<String> sessionRepository) {
+        this.contextManager = contextManager;
         this.sessionRepository = sessionRepository;
     }
 
@@ -23,7 +27,7 @@ public class SessionManager implements Filter {
     }
 
     public Session getSession(boolean create) {
-        Context context = threadLocal.get();
+        Context context = contextManager.getContext();
         if (context == null) {
             throw new IllegalStateException("SessionManager is not initialized");
         }
@@ -54,9 +58,7 @@ public class SessionManager implements Filter {
     }
 
     @Override
-    public void before(HttpRequest request, HttpResponse response) {
-        threadLocal.set(new Context(request, response));
-    }
+    public void before(HttpRequest request, HttpResponse response) { }
 
     @Override
     public void after(HttpRequest request, HttpResponse response) {
@@ -65,8 +67,6 @@ public class SessionManager implements Filter {
             sessionRepository.save(session);
         }
     }
-
-    record Context(HttpRequest request, HttpResponse response) {}
 
     private String getSidFromResponse(HttpResponse response) {
         String cookieHeader = response.getHeader("Set-Cookie");
