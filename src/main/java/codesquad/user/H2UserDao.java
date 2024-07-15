@@ -120,14 +120,13 @@ public class H2UserDao implements UserDao {
         return null;
     }
 
+    private final String SELECT_ALL_USERS_SQL = "SELECT * FROM users";
     @Override
     public List<User> findAll() {
         List<User> users = new ArrayList<>();
-        String SELECT_ALL_USERS_SQL = "SELECT * FROM users";
-
         try (Connection con = getConnection();
-             PreparedStatement preparedStatement = con.prepareStatement(SELECT_ALL_USERS_SQL);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
+             Statement statement = con.createStatement();
+             ResultSet resultSet = statement.executeQuery(SELECT_ALL_USERS_SQL)) {
 
             while (resultSet.next()) {
                 users.add(new User(
