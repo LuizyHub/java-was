@@ -13,7 +13,7 @@ import codesquad.router.UsersRouter;
 import codesquad.template.TemplateLoader;
 import server.Server;
 import server.config.Configuration;
-import codesquad.database.MemorySessionRepository;
+import codesquad.session.MemorySessionRepository;
 import server.session.SessionManager;
 import server.session.SessionRepository;
 

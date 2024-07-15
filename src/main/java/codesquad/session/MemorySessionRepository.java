@@ -1,4 +1,4 @@
-package codesquad.database;
+package codesquad.session;
 
 import server.session.Session;
 import server.session.SessionRepository;
