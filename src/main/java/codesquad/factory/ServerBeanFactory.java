@@ -1,6 +1,7 @@
 package codesquad.factory;
 
 import codesquad.ServerConfiguration;
+import codesquad.user.H2UserDao;
 import codesquad.user.MemoryUserDao;
 import codesquad.user.UserDao;
 import codesquad.filter.ContextManager;
@@ -11,6 +12,7 @@ import codesquad.router.RegisterRouter;
 import codesquad.router.TemplateRouter;
 import codesquad.router.UsersRouter;
 import codesquad.template.TemplateLoader;
+import org.h2.jdbcx.JdbcConnectionPool;
 import server.Server;
 import server.config.Configuration;
 import codesquad.session.MemorySessionRepository;
@@ -49,7 +51,11 @@ public class ServerBeanFactory {
     }
 
     public UserDao userDao() {
-        return getOrComputeBean(UserDao.class, MemoryUserDao::new);
+        return getOrComputeBean(UserDao.class, () -> new H2UserDao(h2connectionPool()));
+    }
+
+    private JdbcConnectionPool h2connectionPool() {
+        return getOrComputeBean(JdbcConnectionPool.class, () -> JdbcConnectionPool.create("jdbc:h2:./data/testdb", "sa", ""));
     }
 
     public SessionManager sessionManager() {
