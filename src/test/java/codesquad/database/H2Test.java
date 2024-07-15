@@ -14,7 +14,7 @@ public class H2Test {
 
     @BeforeAll
     public static void h2() throws SQLException {
-        connection = DriverManager.getConnection("jdbc:h2:./data/testdb", "sa", "");
+        connection = DriverManager.getConnection("jdbc:h2:mem:test", "sa", "");
         Statement statement = connection.createStatement();
 
         // users 테이블 생성
