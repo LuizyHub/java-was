@@ -144,6 +144,18 @@ public class H2UserDao implements UserDao {
         return users;
     }
 
+    private final String DELETE_ALL_USERS_SQL = "DELETE FROM users";
+    @Override
+    public void deleteAll() {
+        try (Connection con = getConnection();
+             Statement statement = con.createStatement()) {
+
+            statement.execute(DELETE_ALL_USERS_SQL);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private Connection getConnection() {
         try {
             return pool.getConnection();

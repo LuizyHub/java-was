@@ -40,4 +40,9 @@ public class MemoryUserDao implements UserDao {
     public List<User> findAll() {
         return List.copyOf(database.values());
     }
+
+    @Override
+    public void deleteAll() {
+        database.clear();
+    }
 }
