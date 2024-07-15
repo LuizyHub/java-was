@@ -1,14 +1,13 @@
 package codesquad.user;
 
-import org.h2.jdbcx.JdbcConnectionPool;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class H2UserDaoTest {
-    private static final JdbcConnectionPool pool = JdbcConnectionPool.create("jdbc:h2:mem:test", "sa", "");
+class MemoryUserDaoTest {
 
-    private final UserDao userDao = new H2UserDao(pool);
+    private final UserDao userDao = new MemoryUserDao();
 
     @Test
     void create() {

@@ -4,11 +4,11 @@ import java.util.List;
 
 public interface UserDao {
 
-    public User save(User user);
+    User save(User user);
 
-    public User findById(Long id);
+    User findById(Long id);
 
-    public User findByUserId(String userId);
+    User findByUserId(String userId);
 
-    public List<User> findAll();
+    List<User> findAll();
 }
