@@ -1,5 +1,6 @@
 package codesquad.database;
 
+import org.h2.jdbcx.JdbcConnectionPool;
 import org.junit.jupiter.api.*;
 
 import java.sql.*;

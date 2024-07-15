@@ -1,7 +1,8 @@
 package codesquad.factory;
 
 import codesquad.ServerConfiguration;
-import codesquad.dao.user.UserDao;
+import codesquad.user.MemoryUserDao;
+import codesquad.user.UserDao;
 import codesquad.filter.ContextManager;
 import codesquad.filter.ThreadLocalContextManager;
 import codesquad.requesthandler.IndexPageHandler;
@@ -48,7 +49,7 @@ public class ServerBeanFactory {
     }
 
     public UserDao userDao() {
-        return getOrComputeBean(UserDao.class, UserDao::new);
+        return getOrComputeBean(UserDao.class, MemoryUserDao::new);
     }
 
     public SessionManager sessionManager() {

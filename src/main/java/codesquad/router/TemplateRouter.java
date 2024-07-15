@@ -1,7 +1,7 @@
 package codesquad.router;
 
-import codesquad.dao.user.User;
-import codesquad.dao.user.UserDao;
+import codesquad.user.User;
+import codesquad.user.UserDao;
 import codesquad.template.TemplateLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

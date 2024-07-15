@@ -1,4 +1,4 @@
-package codesquad.dao.user;
+package codesquad.user;
 
 import java.util.Objects;
 

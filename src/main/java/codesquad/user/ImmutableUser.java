@@ -1,4 +1,4 @@
-package codesquad.dao.user;
+package codesquad.user;
 
 public record ImmutableUser(Long id, String userId, String name, String password) {
 
