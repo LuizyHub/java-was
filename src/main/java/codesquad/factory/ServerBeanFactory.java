@@ -1,6 +1,9 @@
 package codesquad.factory;
 
 import codesquad.ServerConfiguration;
+import codesquad.board.BoardDao;
+import codesquad.board.H2BoardDao;
+import codesquad.router.BoardRouter;
 import codesquad.user.H2UserDao;
 import codesquad.user.MemoryUserDao;
 import codesquad.user.UserDao;
@@ -80,6 +83,14 @@ public class ServerBeanFactory {
 
     public ThreadLocalContextManager threadLocalManager() {
         return getOrComputeBean(ThreadLocalContextManager.class, ThreadLocalContextManager::new);
+    }
+
+    public BoardRouter boardRouter() {
+        return getOrComputeBean(BoardRouter.class, () -> (BoardRouter) new BoardRouter(boardDao(), sessionManager()).init());
+    }
+
+    public BoardDao boardDao() {
+        return getOrComputeBean(BoardDao.class, () -> new H2BoardDao(h2connectionPool()));
     }
 
     protected synchronized <T> T getOrComputeBean(Class<T> beanClass, Supplier<T> supplier) {

@@ -36,6 +36,7 @@ public class ServerConfiguration extends Configuration {
         routerAdder.add(factory.usersRouter());
         routerAdder.add(factory.registerRouter());
         routerAdder.add(factory.templateRouter());
+        routerAdder.add(factory.boardRouter());
     }
 
     @Override
