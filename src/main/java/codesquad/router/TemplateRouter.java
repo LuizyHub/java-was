@@ -31,6 +31,7 @@ public class TemplateRouter extends Router {
     protected void addRouterFunctions(PairAdder<EndPoint, RouterFunction> routerFunctionAdder) {
         routerFunctionAdder.add(mainPage, this::mainPageTemplate);
         routerFunctionAdder.add(userListPage, this::userListPageTemplate);
+        routerFunctionAdder.add(writePage, this::writePageTemplate);
     }
 
     private final EndPoint mainPage = EndPoint.of(HttpMethod.GET, "/index.html");
@@ -48,8 +49,9 @@ public class TemplateRouter extends Router {
         }
 
         User user = userDao.findById(sessionManager.getSession(false).getUserId());
+        String writeBoardBtn = templateLoader.loadTemplate("/writeBoardBtn.html");
         String userButtons = getUserButtons(user.getNickname());
-        String template = templateLoader.loadTemplate("/main.html", userButtons);
+        String template = templateLoader.loadTemplate("/main.html", writeBoardBtn + userButtons);
         response.setHeader("Content-Length", String.valueOf(template.getBytes().length));
 
         return template;
@@ -75,6 +77,21 @@ public class TemplateRouter extends Router {
                 .reduce("", (acc, cur) -> acc + cur);
         String userButtons = getUserButtons(userDao.findById(userID).getNickname());
         String template = templateLoader.loadTemplate("/userList.html", userButtons, userList);
+        response.setHeader("Content-Length", String.valueOf(template.getBytes().length));
+        return template;
+    }
+
+    private final EndPoint writePage = EndPoint.of(HttpMethod.GET, "/write.html");
+    private Object writePageTemplate(HttpRequest request, HttpResponse response) {
+        Long userID = getUserId();
+        if (userID == null) {
+            response.setRedirect("/login");
+            return null;
+        }
+
+        response.setHeader("Content-Type", "text/html");
+        String userButtons = getUserButtons(userDao.findById(userID).getNickname());
+        String template = templateLoader.loadTemplate("/write.html", userButtons);
         response.setHeader("Content-Length", String.valueOf(template.getBytes().length));
         return template;
     }
