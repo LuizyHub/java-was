@@ -1,5 +1,6 @@
 package codesquad.router;
 
+import codesquad.template.Template;
 import codesquad.user.User;
 import codesquad.user.UserDao;
 import codesquad.template.TemplateLoader;
@@ -64,21 +65,24 @@ public class TemplateRouter extends Router {
     }
 
     private final EndPoint userListPage = EndPoint.of(HttpMethod.GET, "/userList.html");
-    private Object userListPageTemplate(HttpRequest request, HttpResponse response) {
+    private Template.UserList userListPageTemplate(HttpRequest request, HttpResponse response) {
         Long userID = getUserId();
         if (userID == null) {
             response.setRedirect("/login");
-            return "";
+            return null;
         }
 
-        response.setHeader("Content-Type", "text/html");
-        String userList = userDao.findAll().stream()
-                .map(user -> templateLoader.loadTemplate("/userLi.html", user.getNickname()))
-                .reduce("", (acc, cur) -> acc + cur);
-        String userButtons = getUserButtons(userDao.findById(userID).getNickname());
-        String template = templateLoader.loadTemplate("/userList.html", userButtons, userList);
-        response.setHeader("Content-Length", String.valueOf(template.getBytes().length));
-        return template;
+        Template.NameBtn nameBtn = new Template.NameBtn(userDao.findById(userID).getNickname());
+        Template.LogoutBtn logoutBtn = new Template.LogoutBtn();
+        Template.UserBtn userBtn = new Template.UserBtn(nameBtn, logoutBtn);
+
+        Template.UserLi[] userLis = userDao.findAll().stream()
+                .map(user -> new Template.UserLi(user.getNickname()))
+                .toArray(Template.UserLi[]::new);
+
+        Template.UserList userList = new Template.UserList(userBtn, userLis);
+        
+        return userList;
     }
 
     private final EndPoint writePage = EndPoint.of(HttpMethod.GET, "/write.html");
