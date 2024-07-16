@@ -13,7 +13,14 @@ import server.router.Router;
 import server.session.SessionManager;
 import server.util.EndPoint;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static server.util.StringUtil.*;
@@ -54,6 +61,30 @@ public class BoardRouter extends Router {
         if (contentType == null || !contentType.startsWith("multipart/form-data")) {
             response.setRedirect("/404.html");
             return null;
+        }
+
+        Map<String, byte[]> files = request.files();
+
+        // save files
+        String directoryPath = "webapp/upload";
+
+        Path uploadPath = Paths.get(directoryPath);
+
+        for (Map.Entry<String, byte[]> entry : files.entrySet()) {
+            String fileName = entry.getKey();
+            byte[] fileContent = entry.getValue();
+
+            // 파일 이름 중복 방지를 위해 타임스탬프 추가
+            String uniqueFileName = System.currentTimeMillis() + "_" + fileName;
+            Path filePath = uploadPath.resolve(uniqueFileName);
+
+            try (OutputStream os = Files.newOutputStream(filePath)) {
+                os.write(fileContent);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            log.info("File saved: {}", filePath);
         }
 
         String boundary = "--" + contentType.split("boundary=")[1];
