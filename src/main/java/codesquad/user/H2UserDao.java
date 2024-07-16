@@ -163,23 +163,17 @@ public class H2UserDao implements UserDao {
         }
     }
 
+    private final String CREATE_USERS_TABLE_IF_NOT_EXISTS_SQL = "CREATE TABLE IF NOT EXISTS users (" +
+            "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
+            "user_id VARCHAR(255), " +
+            "nickname VARCHAR(255), " +
+            "password VARCHAR(255))";
     private void createUsersTable() {
         try (Connection con = getConnection();
              Statement statement = con.createStatement()) {
-
-            statement.execute("DROP TABLE IF EXISTS users");
-
-            statement.execute("CREATE TABLE users (" +
-                    "id INT AUTO_INCREMENT PRIMARY KEY, " +
-                    "user_id VARCHAR(255), " +
-                    "nickname VARCHAR(255), " +
-                    "password VARCHAR(255))");
+            statement.execute(CREATE_USERS_TABLE_IF_NOT_EXISTS_SQL);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-        // TODO: Remove this test data
-        User test = new User("luizy", "luizy", "1234");
-        save(test);
     }
 }
