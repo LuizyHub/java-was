@@ -24,7 +24,7 @@ abstract class BoardDaoTest {
     @Test
     void create() {
         // given
-        Board board = new Board("title", "contents");
+        Board board = new Board(1L,"title", "contents", null);
 
         // when
         Board savedBoard = boardDao.save(board);
@@ -36,7 +36,7 @@ abstract class BoardDaoTest {
     @Test
     void findById() {
         // given
-        Board board = new Board("title", "contents");
+        Board board = new Board(1L, "title", "contents", null);
         Board savedBoard = boardDao.save(board);
 
         // when
@@ -51,7 +51,7 @@ abstract class BoardDaoTest {
     @Test
     void deleteAll() {
         // given
-        Board board = new Board("title", "contents");
+        Board board = new Board(1L, "title", "contents", null);
         boardDao.save(board);
 
         // when
@@ -64,8 +64,8 @@ abstract class BoardDaoTest {
     @Test
     void findAll() {
         // given
-        Board board1 = new Board("title1", "contents1");
-        Board board2 = new Board("title2", "contents2");
+        Board board1 = new Board(1L, "title1", "contents1", null);
+        Board board2 = new Board(1L, "title2", "contents2", null);
         boardDao.save(board1);
         boardDao.save(board2);
 

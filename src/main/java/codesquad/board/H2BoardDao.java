@@ -27,14 +27,16 @@ public class H2BoardDao implements BoardDao {
         }
     }
 
-    private final String INSERT_BOARD_SQL = "INSERT INTO boards (title, content) VALUES (?, ?)";
+    private final String INSERT_BOARD_SQL = "INSERT INTO boards (user_id, title, content, image_url) VALUES (?, ?, ?, ?)";
 
     private Board createBoard(Board board) {
         try (Connection con = getConnection();
              PreparedStatement preparedStatement = con.prepareStatement(INSERT_BOARD_SQL, PreparedStatement.RETURN_GENERATED_KEYS)) {
 
-            preparedStatement.setString(1, board.getTitle());
-            preparedStatement.setString(2, board.getContent());
+            preparedStatement.setLong(1, board.getUserId());
+            preparedStatement.setString(2, board.getTitle());
+            preparedStatement.setString(3, board.getContent());
+            preparedStatement.setString(4, board.getImageUrl());
             int affectedRows = preparedStatement.executeUpdate();
 
             if (affectedRows == 0) {
@@ -55,14 +57,15 @@ public class H2BoardDao implements BoardDao {
         }
     }
 
-    private final String UPDATE_BOARD_SQL = "UPDATE boards SET title = ?, content = ? WHERE id = ?";
+    private final String UPDATE_BOARD_SQL = "UPDATE boards SET user_id = ?, title = ?, content = ?, image_url = ? WHERE id = ?";
     private Board updateBoard(Board board) {
         try (Connection con = getConnection();
              PreparedStatement preparedStatement = con.prepareStatement(UPDATE_BOARD_SQL)) {
-
-            preparedStatement.setString(1, board.getTitle());
-            preparedStatement.setString(2, board.getContent());
-            preparedStatement.setLong(3, board.getId());
+            preparedStatement.setLong(1, board.getUserId());
+            preparedStatement.setString(2, board.getTitle());
+            preparedStatement.setString(3, board.getContent());
+            preparedStatement.setString(4, board.getImageUrl());
+            preparedStatement.setLong(5, board.getId());
             int affectedRows = preparedStatement.executeUpdate();
 
             if (affectedRows == 0) {
@@ -83,7 +86,12 @@ public class H2BoardDao implements BoardDao {
             preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                return new Board(resultSet.getLong("id"), resultSet.getString("title"), resultSet.getString("content"));
+                return new Board(
+                        resultSet.getLong("id"),
+                        resultSet.getLong("user_id"),
+                        resultSet.getString("title"),
+                        resultSet.getString("content"),
+                        resultSet.getString("image_url"));
             }
             return null;
         } catch (SQLException e) {
@@ -99,7 +107,12 @@ public class H2BoardDao implements BoardDao {
              ResultSet resultSet = preparedStatement.executeQuery()) {
             List<Board> boards = new ArrayList<>();
             while (resultSet.next()) {
-                boards.add(new Board(resultSet.getLong("id"), resultSet.getString("title"), resultSet.getString("content")));
+                boards.add(new Board(
+                        resultSet.getLong("id"),
+                        resultSet.getLong("user_id"),
+                        resultSet.getString("title"),
+                        resultSet.getString("content"),
+                        resultSet.getString("image_url")));
             }
             return boards;
         } catch (SQLException e) {
@@ -122,7 +135,7 @@ public class H2BoardDao implements BoardDao {
         return pool.getConnection();
     }
 
-    private final String CREATE_BOARDS_TABLE_SQL = "CREATE TABLE IF NOT EXISTS boards (id BIGINT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(100), content VARCHAR(1000))";
+    private final String CREATE_BOARDS_TABLE_SQL = "CREATE TABLE IF NOT EXISTS boards (id BIGINT AUTO_INCREMENT PRIMARY KEY, user_id BIGINT, title VARCHAR(100), content VARCHAR(1000), image_url VARCHAR(100))";
     private void createBoardsTable() {
         try (Connection con = getConnection()) {
             con.createStatement().execute(CREATE_BOARDS_TABLE_SQL);
