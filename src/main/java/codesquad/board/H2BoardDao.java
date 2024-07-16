@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -90,14 +91,31 @@ public class H2BoardDao implements BoardDao {
         }
     }
 
+    private final String FIND_ALL_SQL = "SELECT * FROM boards";
     @Override
     public List<Board> findAll() {
-        return List.of();
+        try (Connection con = getConnection();
+             PreparedStatement preparedStatement = con.prepareStatement(FIND_ALL_SQL);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            List<Board> boards = new ArrayList<>();
+            while (resultSet.next()) {
+                boards.add(new Board(resultSet.getLong("id"), resultSet.getString("title"), resultSet.getString("content")));
+            }
+            return boards;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
+    private final String DELETE_ALL_SQL = "DELETE FROM boards";
     @Override
     public void deleteAll() {
-
+        try (Connection con = getConnection();
+             PreparedStatement preparedStatement = con.prepareStatement(DELETE_ALL_SQL)) {
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private Connection getConnection() throws SQLException {

@@ -19,7 +19,14 @@ public interface BoardDao {
      */
     Board findById(Long id);
 
+    /**
+     * 저장된 모든 Board를 반환한다.
+     * @return
+     */
     List<Board> findAll();
 
+    /**
+     * 모든 Board를 삭제한다.
+     */
     void deleteAll();
 }
