@@ -17,8 +17,8 @@ public class TemplateLoader {
         }
     }
 
-    public String loadTemplate(String templateName, String... args) {
-        return String.format(loadTemplate(templateName), (Object) args);
+    public String loadTemplate(String templateName, Object... args) {
+        return String.format(loadTemplate(templateName), args);
     }
 
     private String getResourcePath(String templateName) {
