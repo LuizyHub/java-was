@@ -177,5 +177,9 @@ public class H2UserDao implements UserDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+
+        // TODO: Remove this test data
+        User test = new User("luizy", "luizy", "1234");
+        save(test);
     }
 }
