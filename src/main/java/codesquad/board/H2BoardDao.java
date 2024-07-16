@@ -74,9 +74,20 @@ public class H2BoardDao implements BoardDao {
         }
     }
 
+    private final String FIND_BY_ID_SQL = "SELECT * FROM boards WHERE id = ?";
     @Override
     public Board findById(Long id) {
-        return null;
+        try (Connection con = getConnection();
+             PreparedStatement preparedStatement = con.prepareStatement(FIND_BY_ID_SQL)) {
+            preparedStatement.setLong(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return new Board(resultSet.getLong("id"), resultSet.getString("title"), resultSet.getString("content"));
+            }
+            return null;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
