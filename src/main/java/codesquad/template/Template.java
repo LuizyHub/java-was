@@ -63,10 +63,19 @@ public abstract class Template {
 
     public static class Post extends Template {
 
-        public Post(String username, String title, String imageUrl, String content) {
+        public Post(String username, String title, String imageUrl, String content, List<Comment> comments, String boardId) {
             this.path = "/post.html";
             imageUrl = "\""+imageUrl+"\"";
-            this.args = new Object[] {username, title, imageUrl, content};
+            String joinedComments = comments.stream().map(Template::toString).reduce("", (a, b) -> a + b);
+            this.args = new Object[] {username, title, imageUrl, content, joinedComments, boardId};
+        }
+    }
+
+    public static class Comment extends Template {
+
+        public Comment(String username, String content) {
+            this.path = "/comment.html";
+            this.args = new Object[] {username, content};
         }
     }
 

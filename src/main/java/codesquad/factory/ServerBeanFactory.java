@@ -3,7 +3,9 @@ package codesquad.factory;
 import codesquad.ServerConfiguration;
 import codesquad.board.BoardDao;
 import codesquad.board.H2BoardDao;
-import codesquad.router.BoardRouter;
+import codesquad.comment.CommentDao;
+import codesquad.comment.H2CommentDao;
+import codesquad.router.*;
 import codesquad.user.H2UserDao;
 import codesquad.user.MemoryUserDao;
 import codesquad.user.UserDao;
@@ -11,9 +13,6 @@ import codesquad.filter.ContextManager;
 import codesquad.filter.ThreadLocalContextManager;
 import codesquad.requesthandler.IndexPageHandler;
 import codesquad.requesthandler.StaticResourceHandler;
-import codesquad.router.RegisterRouter;
-import codesquad.router.TemplateRouter;
-import codesquad.router.UsersRouter;
 import codesquad.template.TemplateLoader;
 import org.h2.jdbcx.JdbcConnectionPool;
 import server.Server;
@@ -70,7 +69,11 @@ public class ServerBeanFactory {
     }
 
     public TemplateRouter templateRouter() {
-        return getOrComputeBean(TemplateRouter.class, () -> (TemplateRouter) new TemplateRouter(templateLoader(), sessionManager(), userDao(), boardDao()).init());
+        return getOrComputeBean(TemplateRouter.class, () -> (TemplateRouter) new TemplateRouter(templateLoader(), sessionManager(), userDao(), boardDao(), commentDao()).init());
+    }
+
+    private CommentDao commentDao() {
+        return getOrComputeBean(CommentDao.class, () -> new H2CommentDao(h2connectionPool()));
     }
 
     public TemplateLoader templateLoader() {
@@ -91,6 +94,10 @@ public class ServerBeanFactory {
 
     public BoardDao boardDao() {
         return getOrComputeBean(BoardDao.class, () -> new H2BoardDao(h2connectionPool()));
+    }
+
+    public CommentRouter commentRouter() {
+        return getOrComputeBean(CommentRouter.class, () -> (CommentRouter) new CommentRouter(commentDao(), sessionManager()).init());
     }
 
     protected synchronized <T> T getOrComputeBean(Class<T> beanClass, Supplier<T> supplier) {

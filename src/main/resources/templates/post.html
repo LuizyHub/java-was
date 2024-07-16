@@ -26,3 +26,24 @@
         %s
     </p>
 </div>
+<!--comments-->
+<ul class="comment">
+    %s
+</ul>
+<form class="form" action="/comments" method="post" style="flex-direction: row">
+    <input type="hidden" name="boardId" value="%s" />
+    <div class="textfield textfield_size_s">
+        <input
+                type="text"
+                class="input_textfield"
+                placeholder="댓글을 입력하세요"
+                name="content"
+        />
+    </div>
+    <button
+            class="btn btn_contained btn_size_m"
+            type="submit"
+    >
+        댓글 작성
+    </button>
+</form>

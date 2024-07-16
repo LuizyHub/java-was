@@ -2,6 +2,8 @@ package codesquad.router;
 
 import codesquad.board.Board;
 import codesquad.board.BoardDao;
+import codesquad.comment.Comment;
+import codesquad.comment.CommentDao;
 import codesquad.template.Template;
 import codesquad.user.User;
 import codesquad.user.UserDao;
@@ -18,7 +20,6 @@ import server.session.Session;
 import server.session.SessionManager;
 import server.util.EndPoint;
 
-import java.util.Collections;
 import java.util.List;
 
 public class TemplateRouter extends Router {
@@ -27,12 +28,14 @@ public class TemplateRouter extends Router {
     private final SessionManager sessionManager;
     private final UserDao userDao;
     private final BoardDao boardDao;
+    private final CommentDao commentDao;
 
-    public TemplateRouter(TemplateLoader templateLoader, SessionManager sessionManager, UserDao userDao, BoardDao boardDao) {
+    public TemplateRouter(TemplateLoader templateLoader, SessionManager sessionManager, UserDao userDao, BoardDao boardDao, CommentDao commentDao) {
         this.templateLoader = templateLoader;
         this.sessionManager = sessionManager;
         this.userDao = userDao;
         this.boardDao = boardDao;
+        this.commentDao = commentDao;
     }
 
     @Override
@@ -50,7 +53,22 @@ public class TemplateRouter extends Router {
         List<Board> boards = boardDao.findAll();
         boards.sort((a, b) -> b.getId().compareTo(a.getId()));
         List<Template.Post> posts = boards.stream()
-                .map(board -> new Template.Post(userDao.findById(board.getUserId()).getNickname(), board.getTitle(), board.getImageUrl(), board.getContent()))
+                .map(board -> {
+
+                    String username = userDao.findById(board.getUserId()).getNickname();
+                    String title = board.getTitle();
+                    String imageUrl = board.getImageUrl();
+                    String content = board.getContent();
+                    List<Comment> byBoardId = commentDao.findByBoardId(board.getId());
+                    List<Template.Comment> comments = byBoardId.stream()
+                            .map(comment -> {
+                                String commentUsername = userDao.findById(comment.getUserId()).getNickname();
+                                return new Template.Comment(commentUsername, comment.getContent());
+                            })
+                            .toList();
+                    String boardId = String.valueOf(board.getId());
+                    return new Template.Post(username, title, imageUrl, content, comments, boardId);
+                })
                 .toList();
 
         Long userID = getUserId();

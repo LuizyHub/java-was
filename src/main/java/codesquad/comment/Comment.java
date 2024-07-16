@@ -6,10 +6,10 @@ public class Comment {
     private Long boardId;
     private String content;
 
-    public Comment(Long userId, String content, Long boardId) {
+    public Comment(Long userId, Long boardId,  String content) {
         this.userId = userId;
-        this.content = content;
         this.boardId = boardId;
+        this.content = content;
     }
 
     public Comment(Long id, Long userId, Long boardId, String content) {
