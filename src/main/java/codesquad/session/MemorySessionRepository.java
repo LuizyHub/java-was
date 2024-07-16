@@ -6,7 +6,7 @@ import server.session.SessionRepository;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MemorySessionRepository implements SessionRepository<String> {
+public class MemorySessionRepository implements SessionRepository {
     private static final Map<String, Session> sessionStorage = new ConcurrentHashMap<>();
 
     @Override

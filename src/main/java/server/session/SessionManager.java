@@ -10,9 +10,9 @@ import static codesquad.filter.ContextManager.*;
 public class SessionManager implements Filter {
     private static final String SID = "SID";
     private final ContextManager contextManager;
-    private final SessionRepository<String> sessionRepository;
+    private final SessionRepository sessionRepository;
 
-    public SessionManager(ContextManager contextManager, SessionRepository<String> sessionRepository) {
+    public SessionManager(ContextManager contextManager, SessionRepository sessionRepository) {
         this.contextManager = contextManager;
         this.sessionRepository = sessionRepository;
     }

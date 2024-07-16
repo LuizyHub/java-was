@@ -1,7 +1,7 @@
 package server.session;
 
-public interface SessionRepository<K> {
+public interface SessionRepository {
     void save(Session session);
-    Session findById(K id);
-    void deleteById(K id);
+    Session findById(String id);
+    void deleteById(String id);
 }
