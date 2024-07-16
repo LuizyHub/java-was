@@ -80,20 +80,20 @@ public class H2CommentDao implements CommentDao {
     @Override
     public Comment findById(Long id) {
         try (Connection con = getConnection();
-            PreparedStatement preparedStatement = con.prepareStatement(SELECT_COMMENT_BY_ID_SQL)) {
-
+             PreparedStatement preparedStatement = con.prepareStatement(SELECT_COMMENT_BY_ID_SQL);
+        ) {
             preparedStatement.setLong(1, id);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                return new Comment(
-                    resultSet.getLong("id"),
-                    resultSet.getLong("user_id"),
-                    resultSet.getLong("board_id"),
-                    resultSet.getString("content")
-                );
-            } else {
-                return null;
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return new Comment(
+                            resultSet.getLong("id"),
+                            resultSet.getLong("user_id"),
+                            resultSet.getLong("board_id"),
+                            resultSet.getString("content")
+                    );
+                } else {
+                    return null;
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -104,26 +104,27 @@ public class H2CommentDao implements CommentDao {
     @Override
     public List<Comment> findByBoardId(Long boardId) {
         try (Connection con = getConnection();
-            PreparedStatement preparedStatement = con.prepareStatement(SELECT_COMMENTS_BY_BOARD_ID_SQL)) {
+             PreparedStatement preparedStatement = con.prepareStatement(SELECT_COMMENTS_BY_BOARD_ID_SQL)) {
 
             preparedStatement.setLong(1, boardId);
-            ResultSet resultSet = preparedStatement.executeQuery();
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                List<Comment> comments = new ArrayList<>();
+                while (resultSet.next()) {
+                    comments.add(new Comment(
+                            resultSet.getLong("id"),
+                            resultSet.getLong("user_id"),
+                            resultSet.getLong("board_id"),
+                            resultSet.getString("content")
+                    ));
+                }
 
-            List<Comment> comments = new ArrayList<>();
-            while (resultSet.next()) {
-                comments.add(new Comment(
-                    resultSet.getLong("id"),
-                    resultSet.getLong("user_id"),
-                    resultSet.getLong("board_id"),
-                    resultSet.getString("content")
-                ));
+                return comments;
             }
-
-            return comments;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
+
 
     private final String SELECT_ALL_COMMENTS_SQL = "SELECT * FROM comments";
     @Override
