@@ -3,6 +3,12 @@ package codesquad.board;
 import java.util.List;
 
 public interface BoardDao {
+    /**
+     * Board를 저장하고 저장된 Board를 반환한다.
+     * Board의 id가 null이라면 새로운 Board를 생성하고, id가 null이 아니라면 Board를 업데이트한다.
+     * @param board
+     * @return Board
+     */
     Board save(Board board);
 
     /**
