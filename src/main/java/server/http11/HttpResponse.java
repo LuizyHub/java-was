@@ -54,6 +54,7 @@ public class HttpResponse {
 
     public void setBody(byte[] body) {
         this.body = body;
+        this.headers.put("Content-Length", String.valueOf(body.length));
     }
 
     public void setBody(String body) {

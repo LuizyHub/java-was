@@ -70,7 +70,7 @@ public class ServerBeanFactory {
     }
 
     public TemplateRouter templateRouter() {
-        return getOrComputeBean(TemplateRouter.class, () -> (TemplateRouter) new TemplateRouter(templateLoader(), sessionManager(), userDao()).init());
+        return getOrComputeBean(TemplateRouter.class, () -> (TemplateRouter) new TemplateRouter(templateLoader(), sessionManager(), userDao(), boardDao()).init());
     }
 
     public TemplateLoader templateLoader() {

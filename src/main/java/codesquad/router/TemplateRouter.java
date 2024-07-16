@@ -1,5 +1,7 @@
 package codesquad.router;
 
+import codesquad.board.Board;
+import codesquad.board.BoardDao;
 import codesquad.template.Template;
 import codesquad.user.User;
 import codesquad.user.UserDao;
@@ -16,16 +18,21 @@ import server.session.Session;
 import server.session.SessionManager;
 import server.util.EndPoint;
 
+import java.util.Collections;
+import java.util.List;
+
 public class TemplateRouter extends Router {
     private static final Logger log = LoggerFactory.getLogger(TemplateRouter.class);
     private final TemplateLoader templateLoader;
     private final SessionManager sessionManager;
     private final UserDao userDao;
+    private final BoardDao boardDao;
 
-    public TemplateRouter(TemplateLoader templateLoader, SessionManager sessionManager, UserDao userDao) {
+    public TemplateRouter(TemplateLoader templateLoader, SessionManager sessionManager, UserDao userDao, BoardDao boardDao) {
         this.templateLoader = templateLoader;
         this.sessionManager = sessionManager;
         this.userDao = userDao;
+        this.boardDao = boardDao;
     }
 
     @Override
@@ -40,22 +47,29 @@ public class TemplateRouter extends Router {
 
         response.setHeader("Content-Type", "text/html");
 
+        List<Board> boards = boardDao.findAll();
+        boards.sort((a, b) -> b.getId().compareTo(a.getId()));
+        List<Template.Post> posts = boards.stream()
+                .map(board -> new Template.Post(userDao.findById(board.getUserId()).getNickname(), board.getTitle(), board.getImageUrl(), board.getContent()))
+                .toList();
+
         Long userID = getUserId();
         if (userID == null) {
-            String loginBtn = templateLoader.loadTemplate("/loginBtn.html");
-            String registerBtn = templateLoader.loadTemplate("/registerBtn.html");
-            String template = templateLoader.loadTemplate("/main.html", loginBtn + registerBtn);
-            response.setHeader("Content-Length", String.valueOf(template.getBytes().length));
-            return template;
+
+            Template.NonUserIndex nonUserIndex = new Template.NonUserIndex(posts);
+            return nonUserIndex;
         }
 
-        User user = userDao.findById(sessionManager.getSession(false).getUserId());
-        String writeBoardBtn = templateLoader.loadTemplate("/writeBoardBtn.html");
-        String userButtons = getUserButtons(user.getNickname());
-        String template = templateLoader.loadTemplate("/main.html", writeBoardBtn + userButtons);
-        response.setHeader("Content-Length", String.valueOf(template.getBytes().length));
+        User user = userDao.findById(userID);
 
-        return template;
+        Template.NameBtn nameBtn = new Template.NameBtn(user.getNickname());
+        Template.LogoutBtn logoutBtn = new Template.LogoutBtn();
+        Template.UserBtn userBtn = new Template.UserBtn(nameBtn, logoutBtn);
+
+
+        Template.UserIndex userIndex = new Template.UserIndex(userBtn, posts);
+
+        return userIndex;
     }
 
     private String getUserButtons(String userNickname) {
