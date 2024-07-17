@@ -14,6 +14,7 @@ public class Board {
         this.userId = userId;
         this.title = title;
         this.content = content;
+        this.imageUrl = imageUrl;
     }
 
     public Board(Long id, Long userId, String title, String content, String imageUrl) {
@@ -21,6 +22,7 @@ public class Board {
         this.userId = userId;
         this.title = title;
         this.content = content;
+        this.imageUrl = imageUrl;
     }
 
     public Long getUserId() {

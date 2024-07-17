@@ -12,11 +12,12 @@ import server.http11.HttpResponse;
 import server.router.Router;
 import server.session.SessionManager;
 import server.util.EndPoint;
+import server.util.FilePart;
 
-import java.util.HashMap;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Map;
-
-import static server.util.StringUtil.*;
 
 public class BoardRouter extends Router {
     private static final Logger log = LoggerFactory.getLogger(BoardRouter.class);
@@ -56,38 +57,55 @@ public class BoardRouter extends Router {
             return null;
         }
 
-        String boundary = "--" + contentType.split("boundary=")[1];
+        Map<String, FilePart> files = request.files();
 
-        log.debug("boundary: {}", boundary);
+        FilePart image = files.get("image");
 
-        String[] split = request.body().split(boundary);
-        Map<String, String> multipart = new HashMap<>();
-        for (String s : split) {
-            s = s.trim();
-            String[] strings = s.split(CRLF+CRLF, 2);
 
-            String startLine = strings[0];
-            if (!startLine.contains("name=")) {
-                continue;
-            }
-            String key = startLine.split("name=\"")[1].split("\"")[0];
-
-            String body = strings[1].trim();
-
-            log.debug("key: {}, body: {}", key, body);
-            multipart.put(key, body);
-        }
-
-        String title = multipart.get("title");
-        String content = multipart.get("content");
+        String title = new String(files.get("title").data());
+        String content = new String(files.get("content").data());
 
         log.debug("title: {}, contents: {}", title, content);
 
-        Board board = new Board(userId, title, content, null);
-        boardDao.save(board);
+        Board board = new Board(userId, title, content, image.fileName());
+        board = boardDao.save(board);
+
+        log.debug("filename: {}", image.fileName());
+
+        log.debug("image: {}", image);
+        try {
+            saveBytesToFile(image.data(), board.getId() + image.fileName());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         response.setRedirect("/index.html");
 
         return null;
     }
+
+    private String getApplicationDirectory() {
+        // Get the path of the running JAR file or class
+        String path = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+        File jarFile = new File(path);
+        // Get the directory
+        return jarFile.getParentFile().getAbsolutePath();
+    }
+
+    private void saveBytesToFile(byte[] bytes, String fileName) throws IOException {
+        String dir = getApplicationDirectory() + "/webapp/upload";
+        File directory = new File(dir);
+        log.debug("dir: {}", dir);
+
+        // Ensure the directory exists
+        if (!directory.exists()) {
+            directory.mkdirs();
+        }
+
+        File file = new File(directory, fileName);
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            fos.write(bytes);
+        }
+    }
+
 }
