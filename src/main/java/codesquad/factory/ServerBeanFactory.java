@@ -5,6 +5,7 @@ import codesquad.board.BoardDao;
 import codesquad.board.H2BoardDao;
 import codesquad.comment.CommentDao;
 import codesquad.comment.H2CommentDao;
+import codesquad.requesthandler.UploadImageHandler;
 import codesquad.router.*;
 import codesquad.user.H2UserDao;
 import codesquad.user.MemoryUserDao;
@@ -98,6 +99,10 @@ public class ServerBeanFactory {
 
     public CommentRouter commentRouter() {
         return getOrComputeBean(CommentRouter.class, () -> (CommentRouter) new CommentRouter(commentDao(), sessionManager()).init());
+    }
+
+    public UploadImageHandler uploadImageHandler() {
+        return getOrComputeBean(UploadImageHandler.class, UploadImageHandler::new);
     }
 
     protected synchronized <T> T getOrComputeBean(Class<T> beanClass, Supplier<T> supplier) {

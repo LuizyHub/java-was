@@ -61,6 +61,13 @@ public class Board {
         return imageUrl;
     }
 
+    public String getImageSource() {
+        if (imageUrl == null) {
+            return "";
+        }
+        return "/upload/" + id + imageUrl;
+    }
+
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
