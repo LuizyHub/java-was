@@ -17,7 +17,7 @@ public class TemplateLoader {
         }
     }
 
-    public String loadTemplate(String templateName, String... args) {
+    public String loadTemplate(String templateName, Object... args) {
         return String.format(loadTemplate(templateName), args);
     }
 

@@ -17,6 +17,9 @@ dependencies {
     // Logback Classic module, an implementation of SLF4J
     implementation 'ch.qos.logback:logback-classic:1.5.6'
 
+    // H2 Database Engine
+    implementation 'com.h2database:h2:2.2.224'
+
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }

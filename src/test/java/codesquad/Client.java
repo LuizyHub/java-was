@@ -4,6 +4,7 @@ import server.config.Configuration;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -57,15 +58,21 @@ public class Client {
 
         // 응답 바디 읽기
         String responseBody = null;
-        if (contentLength > 0) {
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder bodyBuilder = new StringBuilder();
-            char[] buffer = new char[contentLength];
-            int bytesRead = br.read(buffer, 0, contentLength);
-            if (bytesRead > 0) {
-                bodyBuilder.append(buffer, 0, bytesRead);
+
+        try (InputStream inputStream = conn.getInputStream()) {
+            if (contentLength > 0) {
+                BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+                StringBuilder bodyBuilder = new StringBuilder();
+                char[] buffer = new char[contentLength];
+                int bytesRead = br.read(buffer, 0, contentLength);
+                if (bytesRead > 0) {
+                    bodyBuilder.append(buffer, 0, bytesRead);
+                }
+                responseBody = bodyBuilder.toString();
             }
-            responseBody = bodyBuilder.toString();
+        }
+        catch (IOException e) {
+            // 응답 바디가 없는 경우
         }
 
         return new Response(responseCode, responseMessage, headerFields, responseBody);

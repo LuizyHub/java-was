@@ -1,8 +1,8 @@
 package codesquad.router;
 
-import codesquad.dao.user.ImmutableUser;
-import codesquad.dao.user.User;
-import codesquad.dao.user.UserDao;
+import codesquad.user.ImmutableUser;
+import codesquad.user.User;
+import codesquad.user.UserDao;
 import server.function.PairAdder;
 import server.function.RouterFunction;
 import server.http11.HttpMethod;
@@ -14,7 +14,6 @@ import server.session.Session;
 import server.session.SessionManager;
 import server.util.EndPoint;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

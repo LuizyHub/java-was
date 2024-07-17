@@ -1,0 +1,49 @@
+<div class="post">
+    <div class="post__account">
+        <img class="post__account__img" />
+        <p class="post__account__nickname">%s</p>
+        <h1>%s</h1>
+    </div>
+    <img class="post__img" src=%s/>
+    <div class="post__menu">
+        <ul class="post__menu__personal">
+            <li>
+                <button class="post__menu__btn">
+                    <img src="./img/like.svg" />
+                </button>
+            </li>
+            <li>
+                <button class="post__menu__btn">
+                    <img src="./img/sendLink.svg" />
+                </button>
+            </li>
+        </ul>
+        <button class="post__menu__btn">
+            <img src="./img/bookMark.svg" />
+        </button>
+    </div>
+    <p class="post__article">
+        %s
+    </p>
+</div>
+<!--comments-->
+<ul class="comment">
+    %s
+</ul>
+<form class="form" action="/comments" method="post" style="flex-direction: row">
+    <input type="hidden" name="boardId" value="%s" />
+    <div class="textfield textfield_size_s">
+        <input
+                type="text"
+                class="input_textfield"
+                placeholder="댓글을 입력하세요"
+                name="content"
+        />
+    </div>
+    <button
+            class="btn btn_contained btn_size_m"
+            type="submit"
+    >
+        댓글 작성
+    </button>
+</form>

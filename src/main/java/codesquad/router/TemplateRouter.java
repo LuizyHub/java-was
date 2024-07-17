@@ -1,7 +1,12 @@
 package codesquad.router;
 
-import codesquad.dao.user.User;
-import codesquad.dao.user.UserDao;
+import codesquad.board.Board;
+import codesquad.board.BoardDao;
+import codesquad.comment.Comment;
+import codesquad.comment.CommentDao;
+import codesquad.template.Template;
+import codesquad.user.User;
+import codesquad.user.UserDao;
 import codesquad.template.TemplateLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,22 +20,29 @@ import server.session.Session;
 import server.session.SessionManager;
 import server.util.EndPoint;
 
+import java.util.List;
+
 public class TemplateRouter extends Router {
     private static final Logger log = LoggerFactory.getLogger(TemplateRouter.class);
     private final TemplateLoader templateLoader;
     private final SessionManager sessionManager;
     private final UserDao userDao;
+    private final BoardDao boardDao;
+    private final CommentDao commentDao;
 
-    public TemplateRouter(TemplateLoader templateLoader, SessionManager sessionManager, UserDao userDao) {
+    public TemplateRouter(TemplateLoader templateLoader, SessionManager sessionManager, UserDao userDao, BoardDao boardDao, CommentDao commentDao) {
         this.templateLoader = templateLoader;
         this.sessionManager = sessionManager;
         this.userDao = userDao;
+        this.boardDao = boardDao;
+        this.commentDao = commentDao;
     }
 
     @Override
     protected void addRouterFunctions(PairAdder<EndPoint, RouterFunction> routerFunctionAdder) {
         routerFunctionAdder.add(mainPage, this::mainPageTemplate);
         routerFunctionAdder.add(userListPage, this::userListPageTemplate);
+        routerFunctionAdder.add(writePage, this::writePageTemplate);
     }
 
     private final EndPoint mainPage = EndPoint.of(HttpMethod.GET, "/index.html");
@@ -38,21 +50,44 @@ public class TemplateRouter extends Router {
 
         response.setHeader("Content-Type", "text/html");
 
+        List<Board> boards = boardDao.findAll();
+        boards.sort((a, b) -> b.getId().compareTo(a.getId()));
+        List<Template.Post> posts = boards.stream()
+                .map(board -> {
+
+                    String username = userDao.findById(board.getUserId()).getNickname();
+                    String title = board.getTitle();
+                    String imageUrl = board.getImageUrl();
+                    String content = board.getContent();
+                    List<Comment> byBoardId = commentDao.findByBoardId(board.getId());
+                    List<Template.Comment> comments = byBoardId.stream()
+                            .map(comment -> {
+                                String commentUsername = userDao.findById(comment.getUserId()).getNickname();
+                                return new Template.Comment(commentUsername, comment.getContent());
+                            })
+                            .toList();
+                    String boardId = String.valueOf(board.getId());
+                    return new Template.Post(username, title, imageUrl, content, comments, boardId);
+                })
+                .toList();
+
         Long userID = getUserId();
         if (userID == null) {
-            String loginBtn = templateLoader.loadTemplate("/loginBtn.html");
-            String registerBtn = templateLoader.loadTemplate("/registerBtn.html");
-            String template = templateLoader.loadTemplate("/main.html", loginBtn + registerBtn);
-            response.setHeader("Content-Length", String.valueOf(template.getBytes().length));
-            return template;
+
+            Template.NonUserIndex nonUserIndex = new Template.NonUserIndex(posts);
+            return nonUserIndex;
         }
 
-        User user = userDao.findById(sessionManager.getSession(false).getUserId());
-        String userButtons = getUserButtons(user.getNickname());
-        String template = templateLoader.loadTemplate("/main.html", userButtons);
-        response.setHeader("Content-Length", String.valueOf(template.getBytes().length));
+        User user = userDao.findById(userID);
 
-        return template;
+        Template.NameBtn nameBtn = new Template.NameBtn(user.getNickname());
+        Template.LogoutBtn logoutBtn = new Template.LogoutBtn();
+        Template.UserBtn userBtn = new Template.UserBtn(nameBtn, logoutBtn);
+
+
+        Template.UserIndex userIndex = new Template.UserIndex(userBtn, posts);
+
+        return userIndex;
     }
 
     private String getUserButtons(String userNickname) {
@@ -62,19 +97,37 @@ public class TemplateRouter extends Router {
     }
 
     private final EndPoint userListPage = EndPoint.of(HttpMethod.GET, "/userList.html");
-    private Object userListPageTemplate(HttpRequest request, HttpResponse response) {
+    private Template.UserList userListPageTemplate(HttpRequest request, HttpResponse response) {
         Long userID = getUserId();
         if (userID == null) {
             response.setRedirect("/login");
-            return "";
+            return null;
+        }
+
+        Template.NameBtn nameBtn = new Template.NameBtn(userDao.findById(userID).getNickname());
+        Template.LogoutBtn logoutBtn = new Template.LogoutBtn();
+        Template.UserBtn userBtn = new Template.UserBtn(nameBtn, logoutBtn);
+
+        Template.UserLi[] userLis = userDao.findAll().stream()
+                .map(user -> new Template.UserLi(user.getNickname()))
+                .toArray(Template.UserLi[]::new);
+
+        Template.UserList userList = new Template.UserList(userBtn, userLis);
+        
+        return userList;
+    }
+
+    private final EndPoint writePage = EndPoint.of(HttpMethod.GET, "/write.html");
+    private Object writePageTemplate(HttpRequest request, HttpResponse response) {
+        Long userID = getUserId();
+        if (userID == null) {
+            response.setRedirect("/login");
+            return null;
         }
 
         response.setHeader("Content-Type", "text/html");
-        String userList = userDao.findAll().stream()
-                .map(user -> templateLoader.loadTemplate("/userLi.html", user.getNickname()))
-                .reduce("", (acc, cur) -> acc + cur);
         String userButtons = getUserButtons(userDao.findById(userID).getNickname());
-        String template = templateLoader.loadTemplate("/userList.html", userButtons, userList);
+        String template = templateLoader.loadTemplate("/write.html", userButtons);
         response.setHeader("Content-Length", String.valueOf(template.getBytes().length));
         return template;
     }

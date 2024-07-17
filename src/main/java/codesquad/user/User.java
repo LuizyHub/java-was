@@ -1,4 +1,4 @@
-package codesquad.dao.user;
+package codesquad.user;
 
 import java.util.Objects;
 
@@ -13,6 +13,13 @@ public class User {
     }
 
     public User(String userId, String nickname, String password) {
+        this.userId = userId;
+        this.nickname = nickname;
+        this.password = password;
+    }
+
+    public User(Long id, String userId, String nickname, String password) {
+        this.id = id;
         this.userId = userId;
         this.nickname = nickname;
         this.password = password;
