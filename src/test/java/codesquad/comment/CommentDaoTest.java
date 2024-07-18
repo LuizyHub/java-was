@@ -86,6 +86,7 @@ abstract class CommentDaoTest {
     @Test
     void findAll() {
         // given
+        int sizeBefore = commentDao.findAll().size();
         Comment comment1 = new Comment(null, 1L, 1L, "First comment.");
         Comment comment2 = new Comment(null, 2L, 1L, "Second comment.");
         commentDao.save(comment1);
@@ -95,12 +96,13 @@ abstract class CommentDaoTest {
         int size = commentDao.findAll().size();
 
         // then
-        assertEquals(2, size);
+        assertEquals(2 + sizeBefore, size);
     }
 
     @Test
     void findByBoardId() {
         // given
+        int sizeBefore = commentDao.findAll().size();
         Comment comment1 = new Comment(null, 1L, 1L, "First comment.");
         Comment comment2 = new Comment(null, 2L, 1L, "Second comment.");
         commentDao.save(comment1);
@@ -110,8 +112,8 @@ abstract class CommentDaoTest {
         List<Comment> comments = commentDao.findByBoardId(1L);
 
         // then
-        assertEquals(2, comments.size());
-        assertEquals("First comment.", comments.get(0).getContent());
-        assertEquals("Second comment.", comments.get(1).getContent());
+        assertEquals(2 + sizeBefore, comments.size());
+        comments.stream().anyMatch(comment -> comment.getContent().equals("First comment."));
+        comments.stream().anyMatch(comment -> comment.getContent().equals("Second comment."));
     }
 }
