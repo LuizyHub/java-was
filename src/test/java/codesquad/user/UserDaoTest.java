@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -71,7 +72,7 @@ abstract class UserDaoTest {
     @Test
     void findByUserId() {
         // given
-        String userId = "luizyToBeFound";
+        String userId = UUID.randomUUID().toString();
         User user = new User(userId, "luizy", "1234");
         User savedUser = userDao.save(user);
 
