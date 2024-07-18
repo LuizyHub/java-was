@@ -27,6 +27,7 @@ public class ServerConfiguration extends Configuration {
 
     @Override
     protected void addRequestHandlers(Adder<RequestHandler> requestHandlerAdder) {
+        requestHandlerAdder.add(factory.uploadImageHandler());
         requestHandlerAdder.add(factory.staticResourceHandler());
         requestHandlerAdder.add(factory.indexPageHandler());
     }

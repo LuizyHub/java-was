@@ -31,7 +31,7 @@ public class ClientHandler implements Runnable {
              OutputStream out = clientSocket.getOutputStream()) {
             log.info("Client connected: {}", clientSocket.getRemoteSocketAddress());
 
-            HttpRequest httpRequest = HttpRequest.pharse(in);
+            HttpRequest httpRequest = HttpRequest.parse(in);
             HttpResponse httpResponse = HttpResponse.create();
 
             log.info("Request: {} {}", httpRequest.method(), httpRequest.uri());

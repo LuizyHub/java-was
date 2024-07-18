@@ -57,7 +57,7 @@ public class TemplateRouter extends Router {
 
                     String username = userDao.findById(board.getUserId()).getNickname();
                     String title = board.getTitle();
-                    String imageUrl = board.getImageUrl();
+                    String imageUrl = board.getImageSource();
                     String content = board.getContent();
                     List<Comment> byBoardId = commentDao.findByBoardId(board.getId());
                     List<Template.Comment> comments = byBoardId.stream()

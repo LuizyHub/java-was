@@ -28,7 +28,7 @@ class HttpRequestTest {
                 "\r\n";
         InputStream in = new ByteArrayInputStream(rawRequest.getBytes());
 
-        HttpRequest request = HttpRequest.pharse(in);
+        HttpRequest request = HttpRequest.parse(in);
 
         assertEquals(HttpMethod.GET, request.method());
         assertEquals(new URI("http://localhost/index.html"), request.uri());
@@ -44,7 +44,7 @@ class HttpRequestTest {
                 "\r\n";
         InputStream in = new ByteArrayInputStream(rawRequest.getBytes());
 
-        HttpRequest request = HttpRequest.pharse(in);
+        HttpRequest request = HttpRequest.parse(in);
 
         assertEquals(HttpMethod.GET, request.method());
         assertEquals(new URI("http://localhost:8080/index.html"), request.uri());
@@ -61,7 +61,7 @@ class HttpRequestTest {
                 "Hello World";
         InputStream in = new ByteArrayInputStream(rawRequest.getBytes());
 
-        HttpRequest request = HttpRequest.pharse(in);
+        HttpRequest request = HttpRequest.parse(in);
 
         assertEquals(HttpMethod.POST, request.method());
         assertEquals(new URI("http://localhost/submit"), request.uri());
@@ -77,7 +77,7 @@ class HttpRequestTest {
                 "\r\n";
         InputStream in = new ByteArrayInputStream(rawRequest.getBytes());
 
-        assertThrows(IllegalArgumentException.class, () -> HttpRequest.pharse(in));
+        assertThrows(IllegalArgumentException.class, () -> HttpRequest.parse(in));
     }
 
     @Test
@@ -88,7 +88,7 @@ class HttpRequestTest {
                 "\r\n";
         InputStream in = new ByteArrayInputStream(rawRequest.getBytes());
 
-        assertThrows(URISyntaxException.class, () -> HttpRequest.pharse(in));
+        assertThrows(URISyntaxException.class, () -> HttpRequest.parse(in));
     }
 
     @Test
@@ -99,7 +99,7 @@ class HttpRequestTest {
                 "\r\n";
         InputStream in = new ByteArrayInputStream(rawRequest.getBytes());
 
-        HttpRequest request = HttpRequest.pharse(in);
+        HttpRequest request = HttpRequest.parse(in);
 
         assertEquals(HttpMethod.OPTIONS, request.method());
         assertEquals(new URI("http://localhost/"), request.uri());
@@ -118,7 +118,7 @@ class HttpRequestTest {
                 "\r\n";
         InputStream in = new ByteArrayInputStream(rawRequest.getBytes());
 
-        HttpRequest request = HttpRequest.pharse(in);
+        HttpRequest request = HttpRequest.parse(in);
 
         assertEquals(HttpMethod.GET, request.method());
         assertEquals(new URI("http://localhost/index.html"), request.uri());
