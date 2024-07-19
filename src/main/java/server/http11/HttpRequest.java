@@ -106,6 +106,11 @@ public record HttpRequest(
             int contentLength = Integer.parseInt(headers.get("Content-Length"));
             bodyBytes = new byte[contentLength];
             int bytesRead = in.read(bodyBytes, 0, contentLength);
+            if (bytesRead < contentLength) {
+                while (bytesRead < contentLength) {
+                    bytesRead += in.read(bodyBytes, bytesRead, contentLength - bytesRead);
+                }
+            }
             body = new String(bodyBytes);
         }
 
