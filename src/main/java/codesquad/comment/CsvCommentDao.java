@@ -16,14 +16,14 @@ public class CsvCommentDao implements CommentDao {
     private final String URL;
     private final Driver driver;
 
-    public CsvCommentDao(Driver driver) {
+    public CsvCommentDao(Driver driver, String dir) {
         this.driver = driver;
-        this.URL = "jdbc:csv:" + getApplicationDirectory() + "/" + FILE_NAME;
+        this.URL = "jdbc:csv:" + getApplicationDirectory() + dir + "/" + FILE_NAME;
         createCsvFileIfNotExists();
     }
 
     private void createCsvFileIfNotExists() {
-        File file = new File(getApplicationDirectory() + "/" + FILE_NAME);
+        File file = new File(URL.substring(9));
         if (!file.exists()) {
             try (FileWriter writer = new FileWriter(file)) {
                 writer.write("id,user_id,board_id,content\n");

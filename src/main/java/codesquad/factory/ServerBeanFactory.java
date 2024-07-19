@@ -58,7 +58,7 @@ public class ServerBeanFactory {
     }
 
     public UserDao userDao() {
-        return getOrComputeBean(UserDao.class, () -> new CsvUserDao(csvJdbcDriver()));
+        return getOrComputeBean(UserDao.class, () -> new CsvUserDao(csvJdbcDriver(), dir()));
     }
 
     public CsvJdbcDriver csvJdbcDriver() {
@@ -81,8 +81,12 @@ public class ServerBeanFactory {
         return getOrComputeBean(TemplateRouter.class, () -> (TemplateRouter) new TemplateRouter(templateLoader(), sessionManager(), userDao(), boardDao(), commentDao()).init());
     }
 
-    private CommentDao commentDao() {
-        return getOrComputeBean(CommentDao.class, () -> new CsvCommentDao(csvJdbcDriver()));
+    public CommentDao commentDao() {
+        return getOrComputeBean(CommentDao.class, () -> new CsvCommentDao(csvJdbcDriver(), dir()));
+    }
+
+    protected String dir() {
+        return "/main";
     }
 
     public TemplateLoader templateLoader() {
@@ -102,7 +106,7 @@ public class ServerBeanFactory {
     }
 
     public BoardDao boardDao() {
-        return getOrComputeBean(BoardDao.class, () -> new CsvBoardDao(csvJdbcDriver()));
+        return getOrComputeBean(BoardDao.class, () -> new CsvBoardDao(csvJdbcDriver(), dir()));
     }
 
     public CommentRouter commentRouter() {

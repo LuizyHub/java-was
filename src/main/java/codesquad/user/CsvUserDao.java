@@ -14,14 +14,14 @@ public class CsvUserDao implements UserDao {
     private final String url;
     private final Driver driver;
 
-    public CsvUserDao(Driver driver) {
+    public CsvUserDao(Driver driver, String dir) {
         this.driver = driver;
-        this.url = "jdbc:csv:" + getApplicationDirectory() + "/" + FILE_NAME;
+        this.url = "jdbc:csv:" + getApplicationDirectory() + dir + "/" + FILE_NAME;
         createCsvFileIfNotExists();
     }
 
     private void createCsvFileIfNotExists() {
-        File file = new File(getApplicationDirectory() + "/" + FILE_NAME);
+        File file = new File(url.substring(9));
         if (!file.exists()) {
             try (FileWriter writer = new FileWriter(file)) {
                 writer.write("id,user_id,nickname,password\n");
