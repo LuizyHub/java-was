@@ -60,6 +60,10 @@ public class BoardRouter extends Router {
         Map<String, FilePart> files = request.files();
 
         FilePart image = files.get("image");
+        if (image == null) {
+            response.setRedirect("/fileTooBig.html");
+            return null;
+        }
 
 
         String title = new String(files.get("title").data());
