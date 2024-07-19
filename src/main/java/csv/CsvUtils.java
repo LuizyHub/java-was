@@ -38,6 +38,7 @@ public class CsvUtils {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath, true))) {
             bw.write(String.join(",", row));
             bw.newLine();
+            bw.flush();
         }
     }
 
