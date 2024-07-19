@@ -1,6 +1,8 @@
 package codesquad;
 
 import codesquad.factory.ServerBeanFactory;
+import codesquad.user.User;
+import codesquad.user.UserDao;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
@@ -24,6 +26,11 @@ public class IntegrationTest {
         @Override
         public Configuration configuration() {
             return getOrComputeBean(Configuration.class, () -> new TestServerConfiguration(this).init());
+        }
+
+        @Override
+        protected String dir() {
+            return "/test";
         }
     }
     static class TestServerConfiguration extends ServerConfiguration {
@@ -250,7 +257,6 @@ public class IntegrationTest {
                 static String userId = "codingluizy";
                 static String password = "1234";
 
-                @BeforeAll
                 static void 회원가입() throws IOException {
                     // given
                     String body = "userId=" + userId + "&password=" + password + "&name=박정제";
@@ -270,6 +276,7 @@ public class IntegrationTest {
                 @Test
                 void 로그인_성공하면_쿠키를_발급한다() throws IOException {
                     // given
+                    회원가입();
                     String body = "userId=" + userId + "&password=" + password;
                     Map<String, String> headers = Map.of(
                             "Content-Type", "application/x-www-form-urlencoded",
@@ -288,6 +295,7 @@ public class IntegrationTest {
                 @Test
                 void 실패하면_user_login_failed_html로_이동한다() throws IOException {
                     // given
+                    회원가입();
                     String body = "userId=" + userId + "&password=" + password + "wrong";
                     Map<String, String> headers = Map.of(
                             "Content-Type", "application/x-www-form-urlencoded",

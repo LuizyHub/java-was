@@ -6,7 +6,7 @@ public class CsvBoardDaoTest extends BoardDaoTest {
 
     @Override
     protected BoardDao createBoardDao() {
-        return new CsvBoardDao(new CsvJdbcDriver());
+        return new CsvBoardDao(new CsvJdbcDriver(), "/test");
     }
 
     @Override

@@ -6,6 +6,6 @@ public class CsvUserDaoTest extends UserDaoTest {
 
     @Override
     protected UserDao createUserDao() {
-        return new CsvUserDao(new CsvJdbcDriver());
+        return new CsvUserDao(new CsvJdbcDriver(), "/test");
     }
 }
