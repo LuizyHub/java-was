@@ -104,14 +104,16 @@ public record HttpRequest(
         String body = "";
         if (headers.containsKey("Content-Length")) {
             int contentLength = Integer.parseInt(headers.get("Content-Length"));
-            bodyBytes = new byte[contentLength];
-            int bytesRead = in.read(bodyBytes, 0, contentLength);
-            if (bytesRead < contentLength) {
-                while (bytesRead < contentLength) {
-                    bytesRead += in.read(bodyBytes, bytesRead, contentLength - bytesRead);
+            if (contentLength > 0) {
+                bodyBytes = new byte[contentLength];
+                int bytesRead = in.read(bodyBytes, 0, contentLength);
+                if (bytesRead < contentLength) {
+                    while (bytesRead < contentLength) {
+                        bytesRead += in.read(bodyBytes, bytesRead, contentLength - bytesRead);
+                    }
                 }
+                body = new String(bodyBytes);
             }
-            body = new String(bodyBytes);
         }
 
 
