@@ -51,7 +51,12 @@ public class TemplateRouter extends Router {
         response.setHeader("Content-Type", "text/html");
 
         List<Board> boards = boardDao.findAll();
-        boards.sort((a, b) -> b.getId().compareTo(a.getId()));
+        //reverse
+        for (int i = 0; i < boards.size() / 2; i++) {
+            Board temp = boards.get(i);
+            boards.set(i, boards.get(boards.size() - i - 1));
+            boards.set(boards.size() - i - 1, temp);
+        }
         List<Template.Post> posts = boards.stream()
                 .map(board -> {
 
